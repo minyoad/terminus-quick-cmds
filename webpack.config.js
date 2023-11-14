@@ -1,38 +1,39 @@
-const path = require('path')
+const path = require("path");
 
 module.exports = {
-  target: 'node',
-  entry: 'src/index.ts',
-  devtool: 'source-map',
+  target: "node",
+  entry: "src/index.ts",
+  devtool: "source-map",
   context: __dirname,
   output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'index.js',
+    path: path.resolve(__dirname, "dist"),
+    filename: "index.js",
     pathinfo: true,
-    libraryTarget: 'umd',
-    devtoolModuleFilenameTemplate: 'webpack-terminus-quick-cmds:///[resource-path]',
+    libraryTarget: "umd",
+    devtoolModuleFilenameTemplate:
+      "webpack-terminus-quick-cmds:///[resource-path]",
   },
-  mode: process.env.DEV ? 'development' : 'production',
+  mode: process.env.DEV ? "development" : "production",
   resolve: {
-    modules: ['.', 'src', 'node_modules', '../app/node_modules'].map(x => path.join(__dirname, x)),
-    extensions: ['.ts', '.js'],
+    modules: [".", "src", "node_modules", "../app/node_modules"].map((x) =>
+      path.join(__dirname, x)
+    ),
+    extensions: [".ts", ".js"],
   },
   module: {
     rules: [
       {
         test: /\.tsx?$/,
-        loader: 'ts-loader',
+        loader: "ts-loader",
         exclude: /node_modules/,
       },
-      { test: /\.pug$/, use: ['apply-loader', 'pug-loader'] },
-      { test: /\.scss$/, use: ['to-string-loader', 'css-loader', 'sass-loader'] },
-      { test: /\.svg/, use: ['svg-inline-loader'] },
-    ]
+      { test: /\.pug$/, use: ["apply-loader", "pug-loader"] },
+      {
+        test: /\.scss$/,
+        use: ["to-string-loader", "css-loader", "sass-loader"],
+      },
+      { test: /\.svg/, use: ["svg-inline-loader"] },
+    ],
   },
-  externals: [
-    /^rxjs/,
-    /^@angular/,
-    /^@ng-bootstrap/,
-    /^terminus-/,
-  ]
-}
+  externals: [/^rxjs/, /^@angular/, /^@ng-bootstrap/, /^terminus-/],
+};

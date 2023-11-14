@@ -1,16 +1,14 @@
-import { ConfigProvider } from 'terminus-core'
+import { ConfigProvider } from "terminus-core";
 
 export class QuickCmdsConfigProvider extends ConfigProvider {
-    defaults = {
-        qc: {
-            cmds: []
-        },
-        hotkeys: {
-            'qc': [
-                'Alt-Q',
-            ],
-        },
-    }
+  defaults = {
+    qc: {
+      cmds: [],
+    },
+    hotkeys: {
+      qc: ["Alt-Q"],
+    },
+  };
 
-    platformDefaults = { }
+  platformDefaults = {};
 }

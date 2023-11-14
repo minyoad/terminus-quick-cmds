@@ -1,27 +1,26 @@
-import { Component, Input, ViewChild, ElementRef } from '@angular/core'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
+import { Component, ElementRef, Input, ViewChild } from "@angular/core";
+
+import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
-    template: require('./promptModal.component.pug'),
+  template: require("./promptModal.component.pug"),
 })
 export class PromptModalComponent {
-    @Input() value: string
-    @Input() password: boolean
-    @ViewChild('input') input: ElementRef
+  @Input() value: string;
+  @Input() password: boolean;
+  @ViewChild("input") input: ElementRef;
 
-    constructor (
-        private modalInstance: NgbActiveModal,
-    ) { }
+  constructor(private modalInstance: NgbActiveModal) {}
 
-    ngOnInit () {
-        this.input.nativeElement.focus()
-    }
+  ngOnInit() {
+    this.input.nativeElement.focus();
+  }
 
-    ok () {
-        this.modalInstance.close(this.value)
-    }
+  ok() {
+    this.modalInstance.close(this.value);
+  }
 
-    cancel () {
-        this.modalInstance.close('')
-    }
+  cancel() {
+    this.modalInstance.close("");
+  }
 }
