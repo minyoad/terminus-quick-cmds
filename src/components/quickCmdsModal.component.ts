@@ -51,13 +51,11 @@ export class QuickCmdsModalComponent {
             let currentTab = tab as TerminalTabComponent
 
             console.log("Sending " + cmd);
-            let originCmd = cmd
 
             let cmds=cmd.split(/(?:\r\n|\r|\n)/)
-
-            for(let cmd of cmds) {
+            for (let i = 0; i < cmds.length; i++) {
+                let cmd = cmds[i];
                 console.log("Sending " + cmd);
-
 
                 if(cmd.startsWith('\\s')){
                     cmd=cmd.replace('\\s','');
@@ -71,18 +69,16 @@ export class QuickCmdsModalComponent {
 
                 if(cmd.startsWith('\\x')){
                     cmd = cmd.replace(/\\x([0-9a-f]{2})/ig, function(_, pair) {
-                            return String.fromCharCode(parseInt(pair, 16));
-                        });
+                        return String.fromCharCode(parseInt(pair, 16));
+                    });
                 }
 
                 let data = cmd;
-                if (originCmd.match(/(?:\r\n|\r|\n)/)) {
+                if (i != cmds.length - 1) {
                     data = data + "\n";
                 }
                 currentTab.sendInput(data);
-                
             }
-
         }
     }
 
