@@ -12,3 +12,9 @@ The default shortcut for opening the Quick Commands menu is `Alt+Q` for Windows.
 3. add support for CTRL Combined key,such as Ctrl+I, CTRL+C, using key value such as \x03 
    refer:https://www.physics.udel.edu/~watson/scen103/ascii.html.
 4. add support for delayed command, using \sxxx to sleep xxx ms
+
+fork官方插件 https://github.com/minyoad/terminus-quick-cmds
+# fix
+此版本修复了每个命令后都会跟上一个换行的问题
+以此为1.0.3版本
+只测试了win平台

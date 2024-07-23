@@ -51,6 +51,7 @@ export class QuickCmdsModalComponent {
             let currentTab = tab as TerminalTabComponent
 
             console.log("Sending " + cmd);
+            let originCmd = cmd
 
             let cmds=cmd.split(/(?:\r\n|\r|\n)/)
 
@@ -74,7 +75,11 @@ export class QuickCmdsModalComponent {
                         });
                 }
 
-                currentTab.sendInput(cmd+"\n");
+                let data = cmd;
+                if (originCmd.match(/(?:\r\n|\r|\n)/)) {
+                    data = data + "\n";
+                }
+                currentTab.sendInput(data);
                 
             }
 
