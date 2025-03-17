@@ -28,7 +28,8 @@
                 .list-group-item.list-group-item-action.pl-5.d-flex.align-items-center(
                     *ngFor='let cmd of group.cmds', 
                     (click)='send(cmd, $event)',
-                    title="Ctrl + Click send to all",
+                    (contextmenu)='copyCommand(cmd, $event)',
+                    title="Ctrl + Click send to all\nRight Click to copy command",
                     [class.active]='childGroups.indexOf(group) === selectedGroupIndex && group.cmds.indexOf(cmd) === selectedCmdIndex'
                 )
                     .mr-auto

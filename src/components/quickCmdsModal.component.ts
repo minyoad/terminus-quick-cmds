@@ -178,6 +178,28 @@ export class QuickCmdsModalComponent {
         }
     }
 
+    copyCommand(cmd: QuickCmds, event: MouseEvent) {
+        event.preventDefault();
+        navigator.clipboard.writeText(cmd.text).then(() => {
+            console.log('Command text copied to clipboard');
+            this.showCopySuccessMessage();
+        }).catch(err => {
+            console.error('Failed to copy text: ', err);
+        });
+    }
+
+    private showCopySuccessMessage() {
+        const message = document.createElement('div');
+        message.textContent = 'Copied successfully';
+        message.style.cssText = 'position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background-color: rgba(0, 0, 0, 0.8); color: white; padding: 8px 16px; border-radius: 4px; z-index: 9999;';
+        document.body.appendChild(message);
+        setTimeout(() => {
+            message.style.opacity = '0';
+            message.style.transition = 'opacity 0.3s';
+            setTimeout(() => document.body.removeChild(message), 300);
+        }, 1500);
+    }
+
     handleKeyDown(event: KeyboardEvent) {
         console.log('KeyDown event:', {
             key: event.key,
@@ -185,6 +207,19 @@ export class QuickCmdsModalComponent {
             target: event.target,
             activeElement: document.activeElement
         });
+
+        if (event.ctrlKey && event.key === 'c') {
+            event.preventDefault();
+            const selectedItem = this.getSelectedItem();
+            if (selectedItem && selectedItem.type === 'cmd') {
+                navigator.clipboard.writeText(selectedItem.cmd.text).then(() => {
+                    console.log('Command text copied to clipboard');
+                }).catch(err => {
+                    console.error('Failed to copy text: ', err);
+                });
+            }
+            return;
+        }
 
         if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
             event.preventDefault()
