@@ -1,15 +1,17 @@
 {
   "compilerOptions": {
+    // "strict": true,
+    "forceConsistentCasingInFileNames": true,
     "baseUrl": "src",
     "module": "commonjs",
     "target": "es2016",
-    "declaration": false,
+// 删除重复的 declaration 配置项，保留后面的 declaration: true 即可
     "noImplicitAny": false,
     "removeComments": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "sourceMap": true,
-    "noUnusedParameters": true,
+// 删除重复的 noUnusedParameters 配置项
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "noUnusedParameters": true,

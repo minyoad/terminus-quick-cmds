@@ -5,9 +5,18 @@ import { QuickCmds, ICmdGroup } from '../api'
 import { BaseTerminalTabComponent as TerminalTabComponent } from 'terminus-terminal';
 
 
+interface FlattenedItem {
+    type: 'group' | 'cmd';
+    group?: ICmdGroup;
+    cmd?: QuickCmds;
+}
+
 @Component({
     template: require('./quickCmdsModal.component.pug'),
     styles: [require('./quickCmdsModal.component.scss')],
+    host: {
+        '(keydown)': 'handleKeyDown($event)'
+    }
 })
 export class QuickCmdsModalComponent {
     cmds: QuickCmds[]
@@ -15,6 +24,9 @@ export class QuickCmdsModalComponent {
     appendCR: boolean
     childGroups: ICmdGroup[]
     groupCollapsed: {[id: string]: boolean} = {}
+    private flattenedItems: FlattenedItem[] = []
+    private selectedGroupIndex: number = 0
+    private selectedCmdIndex: number = -1
 
     constructor (
         public modalInstance: NgbActiveModal,
@@ -26,6 +38,7 @@ export class QuickCmdsModalComponent {
         this.cmds = this.config.store.qc.cmds
         this.appendCR = true
         this.refresh()
+        // 初始化时不设置搜索框焦点
     }
 
     quickSend () {
@@ -128,6 +141,7 @@ export class QuickCmdsModalComponent {
 
     refresh () {
         this.childGroups = []
+        this.flattenedItems = []
 
         let cmds = this.cmds
         if (this.quickCmd) {
@@ -146,5 +160,127 @@ export class QuickCmdsModalComponent {
             }
             group.cmds.push(cmd)
         }
+
+        this.updateFlattenedItems()
+        this.selectedGroupIndex = 0
+        this.selectedCmdIndex = -1
+    }
+
+    private updateFlattenedItems() {
+        this.flattenedItems = []
+        for (let group of this.childGroups) {
+            this.flattenedItems.push({type: 'group', group})
+            if (!this.groupCollapsed[group.name]) {
+                for (let cmd of group.cmds) {
+                    this.flattenedItems.push({type: 'cmd', cmd})
+                }
+            }
+        }
+    }
+
+    handleKeyDown(event: KeyboardEvent) {
+        console.log('KeyDown event:', {
+            key: event.key,
+            type: event.type,
+            target: event.target,
+            activeElement: document.activeElement
+        });
+
+        if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+            event.preventDefault()
+            const direction = event.key === 'ArrowUp' ? -1 : 1
+            const currentIndex = this.getSelectedIndex()
+            
+            const findNextVisibleItem = (startIndex: number, direction: number): number => {
+                let index = startIndex + direction
+                while (index >= 0 && index < this.flattenedItems.length) {
+                    const item = this.flattenedItems[index]
+                    if (item.type === 'group') {
+                        return index
+                    }
+                    if (item.type === 'cmd') {
+                        const group = this.childGroups.find(g => g.cmds.includes(item.cmd))
+                        if (!this.groupCollapsed[group.name]) {
+                            return index
+                        }
+                    }
+                    index += direction
+                }
+                return -1
+            }
+
+            const newIndex = findNextVisibleItem(currentIndex, direction)
+            if (newIndex >= 0) {
+                const item = this.flattenedItems[newIndex]
+                if (item.type === 'group') {
+                    this.selectedGroupIndex = this.childGroups.indexOf(item.group)
+                    this.selectedCmdIndex = -1
+                } else {
+                    const group = this.childGroups.find(g => g.cmds.includes(item.cmd))
+                    this.selectedGroupIndex = this.childGroups.indexOf(group)
+                    this.selectedCmdIndex = group.cmds.indexOf(item.cmd)
+                }
+
+                requestAnimationFrame(() => {
+                    const element = document.querySelector('.list-group-item.active')
+                    if (element) {
+                        element.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+                    }
+                })
+            }
+        } else if (event.key === 'Escape') {
+            const searchInput = document.querySelector('.quickCmd') as HTMLElement
+            if (searchInput) {
+                console.log('Focusing search input on Escape');
+                searchInput.focus()
+                this.selectedGroupIndex = 0
+                this.selectedCmdIndex = -1
+                // 清空搜索框
+                this.quickCmd = ''
+                this.refresh()
+            }
+        } else if (event.key === ' ') {
+            const searchInput = document.querySelector('.quickCmd') as HTMLElement
+            const isSearchFocused = document.activeElement === searchInput
+            
+            // 如果搜索框没有输入内容，空格键应该用于展开/折叠分组
+            if (!this.quickCmd || !isSearchFocused) {
+                event.preventDefault()
+                const selectedItem = this.getSelectedItem()
+                if (selectedItem && selectedItem.type === 'group') {
+                    this.groupCollapsed[selectedItem.group.name] = !this.groupCollapsed[selectedItem.group.name]
+                    this.updateFlattenedItems()
+                    this.selectedCmdIndex = -1
+                }
+            }
+        } else if (event.key === 'Enter') {
+            event.preventDefault()
+            const selectedItem = this.getSelectedItem()
+            if (selectedItem && selectedItem.type === 'cmd') {
+                this.send(selectedItem.cmd, new MouseEvent('click'))
+            }
+        }
+    }
+
+    private getSelectedIndex(): number {
+        for (let i = 0; i < this.flattenedItems.length; i++) {
+            const item = this.flattenedItems[i]
+            if (item.type === 'group') {
+                if (this.childGroups.indexOf(item.group) === this.selectedGroupIndex && this.selectedCmdIndex === -1) {
+                    return i
+                }
+            } else {
+                const group = this.childGroups.find(g => g.cmds.includes(item.cmd))
+                if (group && this.childGroups.indexOf(group) === this.selectedGroupIndex && 
+                    group.cmds.indexOf(item.cmd) === this.selectedCmdIndex) {
+                    return i
+                }
+            }
+        }
+        return -1
+    }
+
+    private getSelectedItem() {
+        return this.flattenedItems[this.getSelectedIndex()]
     }
 }

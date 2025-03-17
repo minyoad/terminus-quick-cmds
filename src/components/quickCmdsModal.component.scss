@@ -2,6 +2,17 @@
     display: block;
     max-height: 70vh;
     overflow-y: auto;
+
+    .list-group-item {
+        &.active {
+            background-color: #007bff !important;
+            border-color: #007bff !important;
+            color: white !important;
+            .text-muted {
+                color: rgba(255, 255, 255, 0.8) !important;
+            }
+        }
+    }
 }
 
 .quickCmd {
