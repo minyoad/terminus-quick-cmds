@@ -63,20 +63,26 @@ export class QuickCmdsModalComponent {
         if (tab instanceof TerminalTabComponent) {
             let currentTab = tab as TerminalTabComponent
 
-            console.log("Sending " + cmd);
+            console.log("Current title:", currentTab.title);
+
+            var terminator = "\n";
+
+            //检查标题是否包含cmd.exe 或powershell
+            if (currentTab.title.includes('cmd.exe') || currentTab.title.includes('powershell')) {
+                terminator = "\r\n";
+            }
+
+            // console.log("Sending " + cmd);
 
             let cmds=cmd.split(/(?:\r\n|\r|\n)/)
 
             for(let cmd of cmds) {
                 console.log("Sending " + cmd);
 
-
                 if(cmd.startsWith('\\s')){
                     cmd=cmd.replace('\\s','');
                     let sleepTime=parseInt(cmd);
-
                     await this.sleep(sleepTime);
-
                     console.log('sleep time: ' + sleepTime);
                     continue;
                 }
@@ -87,10 +93,11 @@ export class QuickCmdsModalComponent {
                         });
                 }
 
-                currentTab.sendInput(cmd+"\n");
-                
+                // 统一使用\r\n作为命令结束符
+                await currentTab.sendInput(cmd);
+                await this.sleep(50); // 添加小延迟确保命令发送完成
+                await currentTab.sendInput(terminator);
             }
-
         }
     }
 
