@@ -42,12 +42,22 @@ export class QuickCmdsModalComponent {
     }
 
     quickSend () {
-        this._send(this.app.activeTab, this.quickCmd + (this.appendCR ? "\n" : ""))
+        let command: QuickCmds = {
+            name: '',
+            text: this.quickCmd,
+            appendCR: true,
+        }
+        this._send(this.app.activeTab, command)
         this.close()
     }
 
     quickSendAll() {
-        this._sendAll(this.quickCmd + (this.appendCR ? "\n" : ""))
+        let command: QuickCmds = {
+            name: '',
+            text: this.quickCmd,
+            appendCR: true,
+        }
+        this._sendAll(command)
         this.close()
     }
 
@@ -55,31 +65,50 @@ export class QuickCmdsModalComponent {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    async _send (tab: BaseTabComponent, cmd: string) {    
+    async _send (tab: BaseTabComponent, quick_cmd: QuickCmds) {    
         
         if (tab instanceof SplitTabComponent) {
-            this._send((tab as SplitTabComponent).getFocusedTab(), cmd)
+            this._send((tab as SplitTabComponent).getFocusedTab(), quick_cmd)
         }
         if (tab instanceof TerminalTabComponent) {
             let currentTab = tab as TerminalTabComponent
 
             console.log("Current title:", currentTab.title);
 
-            var terminator = "\n";
-
-            //检查标题是否包含cmd.exe 或powershell
-            if (currentTab.title.includes('cmd.exe') || currentTab.title.includes('powershell')) {
+            let terminator = "\n";
+            let lineContinuation = "\\";
+            let cmdDelimiter = "&&";
+            
+            // 根据终端类型设置不同的命令分隔符和续行符
+            if (currentTab.title.includes('cmd.exe')) {
                 terminator = "\r\n";
+                lineContinuation = "^";
+                cmdDelimiter="&"
+            } else if (currentTab.title.includes('powershell')) {
+                terminator = "\r\n";
+                lineContinuation = "`";
+                cmdDelimiter=";"
             }
+            
+            let cmd_text=quick_cmd.text
 
-            // console.log("Sending " + cmd);
+            let cmds=cmd_text.split(/(?:\r\n|\r|\n)/)
 
-            let cmds=cmd.split(/(?:\r\n|\r|\n)/)
+            let new_cmds=[];
 
             for(let cmd of cmds) {
                 console.log("Sending " + cmd);
 
+                if(cmd===''){
+                    continue;
+                }
+
                 if(cmd.startsWith('\\s')){
+                    // 处理以 \s 开头的命令
+                    console.log('Processing sleep command');
+                    if(!quick_cmd.appendCR){
+                        continue;
+                    }
                     cmd=cmd.replace('\\s','');
                     let sleepTime=parseInt(cmd);
                     await this.sleep(sleepTime);
@@ -92,16 +121,33 @@ export class QuickCmdsModalComponent {
                             return String.fromCharCode(parseInt(pair, 16));
                         });
                 }
+            
+                if(!quick_cmd.appendCR){
+                    new_cmds.push(cmd);
+                    continue;
+                }
 
-                // 统一使用\r\n作为命令结束符
                 await currentTab.sendInput(cmd);
                 await this.sleep(50); // 添加小延迟确保命令发送完成
-                await currentTab.sendInput(terminator);
+                await currentTab.sendInput(terminator);                
+            }
+
+            if (new_cmds.length > 0) {
+                let new_cmd_text;
+                if (currentTab.title.includes('powershell')) {
+                    // PowerShell特殊处理：使用分号连接命令，最后一个命令后不加续行符
+                    new_cmd_text = new_cmds.join(" ; ");
+                } else {
+                    new_cmd_text = new_cmds.join(" "+cmdDelimiter + lineContinuation + terminator);
+                }
+                console.log("New command text:", new_cmd_text);
+                await currentTab.sendInput(new_cmd_text);
+                // await currentTab.sendInput(terminator);
             }
         }
     }
 
-    _sendAll (cmd: string) {
+    _sendAll (cmd: QuickCmds) {
         for (let tab of this.app.tabs) {
             if (tab instanceof SplitTabComponent) {
                 for (let subtab of (tab as SplitTabComponent).getAllTabs()) {
@@ -120,10 +166,10 @@ export class QuickCmdsModalComponent {
 
     send (cmd: QuickCmds, event: MouseEvent) {
         if (event.ctrlKey) {
-            this._sendAll(cmd.text + (cmd.appendCR ? "\n" : ""))
+            this._sendAll(cmd)
         }
         else {
-            this._send(this.app.activeTab, cmd.text + (cmd.appendCR ? "\n" : ""))
+            this._send(this.app.activeTab, cmd)
         }
         this.close()
     }
@@ -132,12 +178,12 @@ export class QuickCmdsModalComponent {
         if (event.shiftKey) {
             if (event.ctrlKey) {
                 for (let cmd of group.cmds) {
-                    this._sendAll(cmd.text + (cmd.appendCR ? "\n" : ""))
+                    this._sendAll(cmd)
                 }
             }
             else {
                 for (let cmd of group.cmds) {
-                    this._send(this.app.activeTab, cmd.text + (cmd.appendCR ? "\n" : ""))
+                    this._send(this.app.activeTab, cmd)
                 }
             }
         }
