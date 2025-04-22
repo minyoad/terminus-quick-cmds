@@ -17,6 +17,19 @@
 - macOS: `Alt+Q`
 - Linux: `Alt+Q`
 
+## 安装说明
+
+### 使用压缩包安装
+
+1. 从 [GitHub Releases](https://github.com/minyoad/terminus-quick-cmds/releases) 下载最新版本的ZIP压缩包
+2. 解压下载的ZIP压缩包
+3. 将解压后的文件夹复制到Tabby的插件目录：
+   - Windows: `%APPDATA%\tabby\plugins`
+   - macOS: `~/Library/Application Support/tabby/plugins`
+   - Linux: `~/.config/tabby/plugins`
+4. 重启Tabby
+5. 在Tabby的设置中查看是否出现Quick Commands菜单，以验证安装是否成功
+
 ## 配置说明
 
 ### 命令配置
