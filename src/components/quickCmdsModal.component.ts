@@ -217,6 +217,10 @@ export class QuickCmdsModalComponent {
         this.updateFlattenedItems()
         this.selectedGroupIndex = 0
         this.selectedCmdIndex = -1
+
+        if(this.quickCmd &&cmds.length>0){
+            this.selectedCmdIndex = 0
+        }
     }
 
     private updateFlattenedItems() {
