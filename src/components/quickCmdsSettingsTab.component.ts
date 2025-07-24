@@ -31,6 +31,8 @@ export class QuickCmdsSettingsTabComponent {
 
         let modal = this.ngbModal.open(EditCommandModalComponent)
         modal.componentInstance.command = command
+        modal.componentInstance.allGroups = Array.from(new Set(this.commands.map(x => x.group || ''))).filter(x => x)
+
         modal.result.then(result => {
             this.commands.push(result)
             this.config.store.qc.cmds = this.commands
@@ -42,6 +44,7 @@ export class QuickCmdsSettingsTabComponent {
     editCommand (command: QuickCmds) {
         let modal = this.ngbModal.open(EditCommandModalComponent)
         modal.componentInstance.command = Object.assign({}, command)
+        modal.componentInstance.allGroups = Array.from(new Set(this.commands.map(x => x.group || ''))).filter(x => x)
         modal.result.then(result => {
             Object.assign(command, result)
             this.config.save()

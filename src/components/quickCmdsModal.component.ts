@@ -1,7 +1,9 @@
 import { Component } from '@angular/core'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { ConfigService, AppService, BaseTabComponent, SplitTabComponent } from 'terminus-core'
 import { QuickCmds, ICmdGroup } from '../api'
+import { EditCommandModalComponent } from './editCommandModal.component'
 import { BaseTerminalTabComponent as TerminalTabComponent } from 'terminus-terminal';
 
 
@@ -24,12 +26,14 @@ export class QuickCmdsModalComponent {
     appendCR: boolean
     childGroups: ICmdGroup[]
     groupCollapsed: {[id: string]: boolean} = {}
+    expandedGroups: { [id: string]: boolean } = {}
     private flattenedItems: FlattenedItem[] = []
     private selectedGroupIndex: number = 0
     private selectedCmdIndex: number = -1
 
     constructor (
         public modalInstance: NgbActiveModal,
+        private ngbModal: NgbModal,
         private config: ConfigService,
         private app: AppService,
     ) { }
@@ -38,6 +42,9 @@ export class QuickCmdsModalComponent {
         this.cmds = this.config.store.qc.cmds
         this.appendCR = true
         this.refresh()
+        this.childGroups.forEach(group => {
+            this.expandedGroups[group.name] = false
+        })
         // 初始化时不设置搜索框焦点
     }
 
@@ -172,6 +179,29 @@ export class QuickCmdsModalComponent {
             this._send(this.app.activeTab, cmd)
         }
         this.close()
+    }
+
+    edit (command?: QuickCmds) {
+        const modal = this.ngbModal.open(EditCommandModalComponent)
+        modal.componentInstance.allGroups = Array.from(new Set(this.cmds.map(x => x.group || ''))).filter(x => x)
+        if (command) {
+            modal.componentInstance.command = Object.assign({}, command)
+        } else {
+            modal.componentInstance.command = {
+                name: '',
+                text: '',
+                appendCR: true,
+            }
+        }
+        modal.result.then(result => {
+            if (command) {
+                Object.assign(command, result)
+            } else {
+                this.cmds.push(result)
+            }
+            this.config.save()
+            this.refresh()
+        }, () => null)
     }
 
     clickGroup (group: ICmdGroup, event: MouseEvent) {

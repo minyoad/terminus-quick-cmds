@@ -21,10 +21,11 @@
                 title="Shift + Click send all to active tab\nCtrl + Shift + Click send all to all tabs",
                 [class.active]='childGroups.indexOf(group) === selectedGroupIndex && selectedCmdIndex === -1'
             )
-                .fa.fa-fw.fa-chevron-right(*ngIf='groupCollapsed[group.name]')
-                .fa.fa-fw.fa-chevron-down(*ngIf='!groupCollapsed[group.name]')
+                .fa.fa-fw.fa-chevron-right(*ngIf='!expandedGroups[group.name]')
+                .fa.fa-fw.fa-chevron-down(*ngIf='expandedGroups[group.name]')
                 .ml-2 {{group.name || "Ungrouped"}}
-            ng-container(*ngIf='!groupCollapsed[group.name]')
+            ng-container(*ngIf='expandedGroups[group.name]')
+
                 .list-group-item.list-group-item-action.pl-5.d-flex.align-items-center(
                     *ngFor='let cmd of group.cmds', 
                     (click)='send(cmd, $event)',

@@ -6,6 +6,7 @@ import { QuickCmds } from '../api'
     template: require('./editCommandModal.component.pug'),
 })
 export class EditCommandModalComponent {
+    allGroups: string[] = []
     command: QuickCmds
 
     constructor (
