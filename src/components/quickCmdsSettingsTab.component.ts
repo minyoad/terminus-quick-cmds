@@ -43,9 +43,14 @@ export class QuickCmdsSettingsTabComponent {
 
     editCommand (command: QuickCmds) {
         let modal = this.ngbModal.open(EditCommandModalComponent)
-        modal.componentInstance.command = Object.assign({}, command)
+        // Ensure command.group is an empty string if it's null or undefined
+        modal.componentInstance.command = { ...command, group: command.group || 'Ungrouped' }
         modal.componentInstance.allGroups = Array.from(new Set(this.commands.map(x => x.group || ''))).filter(x => x)
         modal.result.then(result => {
+            // If the group is 'Ungrouped', set it to null
+            if (result.group === 'Ungrouped') {
+                result.group = null
+            }
             Object.assign(command, result)
             this.config.save()
             this.refresh()

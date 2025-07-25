@@ -42,9 +42,8 @@ export class QuickCmdsModalComponent {
         this.cmds = this.config.store.qc.cmds
         this.appendCR = true
         this.refresh()
-        this.childGroups.forEach(group => {
-            this.expandedGroups[group.name] = false
-        })
+
+        this.updateFlattenedItems()
         // 初始化时不设置搜索框焦点
     }
 
@@ -183,9 +182,11 @@ export class QuickCmdsModalComponent {
 
     edit (command?: QuickCmds) {
         const modal = this.ngbModal.open(EditCommandModalComponent)
-        modal.componentInstance.allGroups = Array.from(new Set(this.cmds.map(x => x.group || ''))).filter(x => x)
+        // Generate a list of all unique groups, including an empty string for 'Ungrouped'
+        modal.componentInstance.allGroups = Array.from(new Set(this.cmds.map(x => x.group || '')))
         if (command) {
-            modal.componentInstance.command = Object.assign({}, command)
+            // Ensure command.group is an empty string if it's null or undefined
+            modal.componentInstance.command = { ...command, group: command.group || '' }
         } else {
             modal.componentInstance.command = {
                 name: '',
@@ -218,7 +219,14 @@ export class QuickCmdsModalComponent {
             }
         }
         else {
+            // Toggle the collapse state of the clicked group
             this.groupCollapsed[group.name] = !this.groupCollapsed[group.name]
+            this.updateFlattenedItems()
+            // If the group is now collapsed, deselect any command within it
+            if (this.groupCollapsed[group.name] && this.selectedGroupIndex === this.childGroups.indexOf(group)) {
+                this.selectedCmdIndex = -1
+            }
+            this.selectedGroupIndex = this.childGroups.indexOf(group)
         }
     }
 
@@ -226,13 +234,16 @@ export class QuickCmdsModalComponent {
         this.childGroups = []
         this.flattenedItems = []
 
-        let cmds = this.cmds
-        if (this.quickCmd) {
-            cmds = cmds.filter(cmd => (cmd.name + cmd.group + cmd.text).toLowerCase().includes(this.quickCmd))
-        }
+        // Filter commands based on search query if quickCmd is present
+        let cmds = this.cmds.filter(cmd => {
+            if (this.quickCmd) {
+                return (cmd.name + cmd.group + cmd.text).toLowerCase().includes(this.quickCmd.toLowerCase())
+            }
+            return true
+        })
 
         for (let cmd of cmds) {
-            cmd.group = cmd.group || null
+            cmd.group = cmd.group || ''
             let group = this.childGroups.find(x => x.name === cmd.group)
             if (!group) {
                 group = {
@@ -244,6 +255,21 @@ export class QuickCmdsModalComponent {
             group.cmds.push(cmd)
         }
 
+        // After refreshing, re-apply the initial collapse/expand logic
+        // If there's a search query, expand all groups by default
+        if (this.quickCmd) {
+            for (const g of this.childGroups) {
+                this.groupCollapsed[g.name] = false
+            }
+        } else {
+            // If no search query, collapse all groups and expand the first one by default
+            for (const g of this.childGroups) {
+                this.groupCollapsed[g.name] = true
+            }
+            if (this.childGroups.length > 0) {
+                this.groupCollapsed[this.childGroups[0].name] = false
+            }
+        }
         this.updateFlattenedItems()
         this.selectedGroupIndex = 0
         this.selectedCmdIndex = -1
@@ -255,11 +281,33 @@ export class QuickCmdsModalComponent {
 
     private updateFlattenedItems() {
         this.flattenedItems = []
-        for (let group of this.childGroups) {
-            this.flattenedItems.push({type: 'group', group})
-            if (!this.groupCollapsed[group.name]) {
-                for (let cmd of group.cmds) {
-                    this.flattenedItems.push({type: 'cmd', cmd})
+        // If there is a search query, ensure all commands are visible regardless of group collapse state
+        if (this.quickCmd) {
+            // Filter commands that match the search query
+            const filteredCmds = this.cmds.filter(cmd => (cmd.name + cmd.group + cmd.text).toLowerCase().includes(this.quickCmd.toLowerCase()))
+            // Create a temporary set to track groups that contain filtered commands
+            const groupsWithFilteredCmds = new Set<string | null>()
+            filteredCmds.forEach(cmd => groupsWithFilteredCmds.add(cmd.group || null))
+
+            // Rebuild flattened items based on filtered commands, ensuring groups are expanded
+            for (const group of this.childGroups) {
+                if (groupsWithFilteredCmds.has(group.name)) {
+                    this.flattenedItems.push({ type: 'group', group })
+                    for (const cmd of group.cmds) {
+                        if (filteredCmds.includes(cmd)) {
+                            this.flattenedItems.push({ type: 'cmd', cmd })
+                        }
+                    }
+                }
+            }
+        } else {
+            // If no search query, rebuild flattened items based on group collapse state
+            for (let group of this.childGroups) {
+                this.flattenedItems.push({type: 'group', group})
+                if (!this.groupCollapsed[group.name]) {
+                    for (let cmd of group.cmds) {
+                        this.flattenedItems.push({type: 'cmd', cmd})
+                    }
                 }
             }
         }
@@ -313,22 +361,25 @@ export class QuickCmdsModalComponent {
             const direction = event.key === 'ArrowUp' ? -1 : 1
             const currentIndex = this.getSelectedIndex()
             
+            // Function to find the next visible item based on direction
             const findNextVisibleItem = (startIndex: number, direction: number): number => {
-                let index = startIndex + direction
+                let index = startIndex + direction;
                 while (index >= 0 && index < this.flattenedItems.length) {
-                    const item = this.flattenedItems[index]
+                    const item = this.flattenedItems[index];
                     if (item.type === 'group') {
-                        return index
-                    }
-                    if (item.type === 'cmd') {
-                        const group = this.childGroups.find(g => g.cmds.includes(item.cmd))
-                        if (!this.groupCollapsed[group.name]) {
-                            return index
+                        // If moving down and group is expanded, the next item is the group itself
+                        // If moving up and group is collapsed, or moving up from a command, the group itself is the target
+                        return index;
+                    } else if (item.type === 'cmd') {
+                        // If the command's group is not collapsed, it's visible
+                        const group = this.childGroups.find(g => g.cmds.includes(item.cmd));
+                        if (group && !this.groupCollapsed[group.name]) {
+                            return index;
                         }
                     }
-                    index += direction
+                    index += direction;
                 }
-                return -1
+                return -1;
             }
 
             const newIndex = findNextVisibleItem(currentIndex, direction)

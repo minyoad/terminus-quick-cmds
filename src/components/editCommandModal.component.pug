@@ -22,7 +22,7 @@
         select.form-control(
             [(ngModel)]='command.group',
         )
-            option([value]="null") Ungrouped
+            option([value]="") Ungrouped
             option(*ngFor="let group of allGroups", [value]="group") {{ group }}
 
     .form-line
