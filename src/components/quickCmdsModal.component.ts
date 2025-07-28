@@ -436,6 +436,17 @@ export class QuickCmdsModalComponent {
                     this.selectedCmdIndex = -1
                 }
             }
+        } else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+            const selectedItem = this.getSelectedItem();
+            if (selectedItem && selectedItem.type === 'group') {
+                event.preventDefault();
+                if (event.key === 'ArrowLeft') {
+                    this.groupCollapsed[selectedItem.group.name] = true;
+                } else if (event.key === 'ArrowRight') {
+                    this.groupCollapsed[selectedItem.group.name] = false;
+                }
+                this.updateFlattenedItems();
+            }
         } else if (event.key === 'Enter') {
             event.preventDefault()
             const selectedItem = this.getSelectedItem()
