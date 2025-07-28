@@ -48,22 +48,32 @@ export class QuickCmdsModalComponent {
     }
 
     quickSend () {
-        let command: QuickCmds = {
-            name: '',
-            text: this.quickCmd,
-            appendCR: true,
+        const selectedItem = this.getSelectedItem();
+        if (selectedItem && selectedItem.type === 'cmd') {
+            this.send(selectedItem.cmd, new MouseEvent('click'));
+        } else {
+            let command: QuickCmds = {
+                name: '',
+                text: this.quickCmd,
+                appendCR: true,
+            }
+            this._send(this.app.activeTab, command)
         }
-        this._send(this.app.activeTab, command)
         this.close()
     }
 
     quickSendAll() {
-        let command: QuickCmds = {
-            name: '',
-            text: this.quickCmd,
-            appendCR: true,
+        const selectedItem = this.getSelectedItem();
+        if (selectedItem && selectedItem.type === 'cmd') {
+            this.send(selectedItem.cmd, new MouseEvent('click', { ctrlKey: true }));
+        } else {
+            let command: QuickCmds = {
+                name: '',
+                text: this.quickCmd,
+                appendCR: true,
+            }
+            this._sendAll(command)
         }
-        this._sendAll(command)
         this.close()
     }
 
@@ -284,10 +294,10 @@ export class QuickCmdsModalComponent {
         // If there is a search query, ensure all commands are visible regardless of group collapse state
         if (this.quickCmd) {
             // Filter commands that match the search query
-            const filteredCmds = this.cmds.filter(cmd => (cmd.name + cmd.group + cmd.text).toLowerCase().includes(this.quickCmd.toLowerCase()))
+            const filteredCmds = this.cmds.filter(cmd => (cmd.name + (cmd.group || '') + cmd.text).toLowerCase().includes(this.quickCmd.toLowerCase()))
             // Create a temporary set to track groups that contain filtered commands
-            const groupsWithFilteredCmds = new Set<string | null>()
-            filteredCmds.forEach(cmd => groupsWithFilteredCmds.add(cmd.group || null))
+            const groupsWithFilteredCmds = new Set<string>()
+            filteredCmds.forEach(cmd => groupsWithFilteredCmds.add(cmd.group || ''))
 
             // Rebuild flattened items based on filtered commands, ensuring groups are expanded
             for (const group of this.childGroups) {
