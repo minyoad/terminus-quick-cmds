@@ -32,23 +32,14 @@ IF ERRORLEVEL 1 (
 echo Version updated to %NEW_VERSION% in package.json
 
 REM 2. Commit to Git
-REM Add package.json to staging area
 git add package.json
-IF ERRORLEVEL 1 (
-    call :error_exit "Could not add package.json to git"
-)
-
-REM Commit changes
 git commit -m "Release v%NEW_VERSION%"
-IF ERRORLEVEL 1 (
-    call :error_exit "Could not commit changes to git"
-)
-
-REM Tag the release
 git tag "v%NEW_VERSION%"
 IF ERRORLEVEL 1 (
     call :error_exit "Could not create git tag"
 )
+git push --tags
+git push 
 
 echo Git changes committed with tag v%NEW_VERSION%
 
@@ -64,67 +55,14 @@ IF ERRORLEVEL 2 (
     echo Package published to npm
 )
 
-REM 4. Compile zip package
-echo Building project...
-yarn build
-IF ERRORLEVEL 1 (
-    call :error_exit "yarn build failed"
-)
-
-echo Reading project name from package.json...
-FOR /F "tokens=*" %%i IN ('node -p "require('./package.json').name" 2^>NUL') DO SET "PROJECT_NAME=%%i"
-IF "%PROJECT_NAME%"=="" (
-    call :error_exit "Could not read project name from package.json"
-)
-echo Project name is %PROJECT_NAME%
-
-SET "ZIP_FILE=%PROJECT_NAME%-v%NEW_VERSION%.zip"
-SET "TEMP_DIR=dist_zip"
-
-REM Create and cleanup temporary directory
-rd /Q /S "%TEMP_DIR%" 2>NUL
-mkdir "%TEMP_DIR%"
-IF NOT EXIST "%TEMP_DIR%" (
-    call :error_exit "Could not create temporary directory"
-)
-
-REM Copy files to temporary directory
-xcopy /E /Q /I /Y dist "%TEMP_DIR%\dist\" >NUL
-IF ERRORLEVEL 1 (
-    call :error_exit "Could not copy dist directory"
-)
-
-copy package.json "%TEMP_DIR%\" >NUL
-IF ERRORLEVEL 1 (
-    call :error_exit "Could not copy package.json"
-)
-
-copy README*.md "%TEMP_DIR%\" >NUL
-IF ERRORLEVEL 1 (
-    call :error_exit "Could not copy README files"
-)
-
-copy LICENSE "%TEMP_DIR%\" >NUL
-IF ERRORLEVEL 1 (
-    call :error_exit "Could not copy LICENSE"
-)
-
 REM Create zip file
 echo Creating zip package...
-powershell -Command "$ErrorActionPreference = 'Stop'; Add-Type -AssemblyName System.IO.Compression.FileSystem; [System.IO.Compression.ZipFile]::CreateFromDirectory('%TEMP_DIR%', '%ZIP_FILE%');"
+yarn pub
 IF ERRORLEVEL 1 (
     call :error_exit "Could not create zip file"
 )
 
-REM Cleanup temporary directory
-rd /Q /S "%TEMP_DIR%"
-IF ERRORLEVEL 1 (
-    call :error_exit "Could not remove temporary directory"
-)
-
-echo Zip package created: %ZIP_FILE%
 echo Deployment script finished successfully!
-
 popd
 ENDLOCAL
 EXIT /B 0
