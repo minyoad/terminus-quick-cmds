@@ -24,7 +24,7 @@ A plugin that provides quick command functionality for Tabby terminal.
 1. Download the latest release ZIP package from [GitHub Releases](https://github.com/minyoad/terminus-quick-cmds/releases)
 2. Extract the ZIP package
 3. Copy the extracted folder to Tabby's plugins directory:
-   - Windows: `%APPDATA%\tabby\plugins`
+   - Windows: `%APPDATA%\tabby\plugins\node_modules`
    - macOS: `~/Library/Application Support/tabby/plugins`
    - Linux: `~/.config/tabby/plugins`
 4. Restart Tabby

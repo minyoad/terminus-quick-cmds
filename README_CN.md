@@ -24,7 +24,7 @@
 1. 从 [GitHub Releases](https://github.com/minyoad/terminus-quick-cmds/releases) 下载最新版本的ZIP压缩包
 2. 解压下载的ZIP压缩包
 3. 将解压后的文件夹复制到Tabby的插件目录：
-   - Windows: `%APPDATA%\tabby\plugins`
+   - Windows: `%APPDATA%\tabby\plugins\node_modules`
    - macOS: `~/Library/Application Support/tabby/plugins`
    - Linux: `~/.config/tabby/plugins`
 4. 重启Tabby
