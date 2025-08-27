@@ -6,15 +6,28 @@ Quick commands plugin for tabby
 
 The default shortcut for opening the Quick Commands menu is `Alt+Q` for Windows.
 
-# update
-1. update dependencies to latest, fixed build error
-2. add support for multiline command
-3. add support for CTRL Combined key,such as Ctrl+I, CTRL+C, using key value such as \x03 
-   refer:https://www.physics.udel.edu/~watson/scen103/ascii.html.
-4. add support for delayed command, using \sxxx to sleep xxx ms
+# Features
 
-fork官方插件 https://github.com/minyoad/terminus-quick-cmds
-# fix
-此版本修复了每个命令后都会跟上一个换行的问题
-以此为1.0.3版本
-只测试了win平台
+## WebDAV同步
+新增WebDAV同步功能，可以将命令配置同步到WebDAV服务器，方便在多台设备间共享配置。
+在设置页面底部可以找到WebDAV同步配置选项，填写WebDAV服务器地址、用户名和密码后，可以上传或下载配置。
+
+## 其他功能
+1. 支持多行命令
+2. 支持组合键，如Ctrl+I、Ctrl+C等，使用十六进制值如\x03
+   参考：https://www.physics.udel.edu/~watson/scen103/ascii.html
+3. 支持延迟命令，使用\sxxx可以延迟xxx毫秒
+
+# Update History
+## v1.0.4
+- 新增WebDAV同步功能，支持配置的云端备份和恢复
+
+## v1.0.3
+- 修复了每个命令后都会跟上一个换行的问题
+- 更新依赖到最新版本，修复构建错误
+- 添加多行命令支持
+- 添加控制字符支持
+- 添加延迟命令支持
+
+fork自官方插件 https://github.com/minyoad/terminus-quick-cmds
+目前主要在Windows平台上测试

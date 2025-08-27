@@ -10,10 +10,12 @@ import { EditCommandModalComponent } from './components/editCommandModal.compone
 import { QuickCmdsModalComponent } from './components/quickCmdsModal.component'
 import { QuickCmdsSettingsTabComponent } from './components/quickCmdsSettingsTab.component'
 import { PromptModalComponent } from './components/promptModal.component'
+import { WebDAVSyncComponent } from './components/webdavSync.component'
 
 import { ButtonProvider } from './buttonProvider'
 import { QuickCmdsConfigProvider } from './config'
 import { QuickCmdsSettingsTabProvider } from './settings'
+import { WebDAVService } from './services/webdav.service'
 
 @NgModule({
     imports: [
@@ -26,18 +28,21 @@ import { QuickCmdsSettingsTabProvider } from './settings'
         { provide: ToolbarButtonProvider, useClass: ButtonProvider, multi: true },
         { provide: ConfigProvider, useClass: QuickCmdsConfigProvider, multi: true },
         { provide: SettingsTabProvider, useClass: QuickCmdsSettingsTabProvider, multi: true },
+        WebDAVService,
     ],
     entryComponents: [
         PromptModalComponent,
         EditCommandModalComponent,
         QuickCmdsModalComponent,
         QuickCmdsSettingsTabComponent,
+        WebDAVSyncComponent,
     ],
     declarations: [
         PromptModalComponent,
         EditCommandModalComponent,
         QuickCmdsModalComponent,
         QuickCmdsSettingsTabComponent,
+        WebDAVSyncComponent,
     ],
 })
 export default class QuickCmdsModule { }

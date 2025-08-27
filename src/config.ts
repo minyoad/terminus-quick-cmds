@@ -3,7 +3,12 @@ import { ConfigProvider } from 'terminus-core'
 export class QuickCmdsConfigProvider extends ConfigProvider {
     defaults = {
         qc: {
-            cmds: []
+            cmds: [],
+            webdav: {
+                url: '',
+                username: '',
+                password: ''
+            }
         },
         hotkeys: {
             'qc': [
