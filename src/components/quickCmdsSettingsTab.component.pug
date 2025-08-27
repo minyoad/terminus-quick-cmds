@@ -1,15 +1,15 @@
-h3 Quick Commands
+h3 快捷命令
 
 .form-group
     button.btn.btn-outline-primary((click)='createCommand()')
         div.fa.fa-fw.fa-globe
-        span.ml-2 Add command
+        span.ml-2 添加命令
 .form-group
     input.form-control.quickCmd(
         type='text', 
         [(ngModel)]='quickCmd', 
         autofocus, 
-        placeholder='enter to filter', 
+        placeholder='输入关键词进行过滤', 
         (ngModelChange)='refresh()',
         (keyup.esc)='cancelFilter()'
     )
@@ -18,7 +18,7 @@ h3 Quick Commands
         .list-group-item.list-group-item-action.d-flex.align-items-center((click)='groupCollapsed[group.name] = !groupCollapsed[group.name]')
             .fa.fa-fw.fa-chevron-right(*ngIf='groupCollapsed[group.name]')
             .fa.fa-fw.fa-chevron-down(*ngIf='!groupCollapsed[group.name]')
-            span.ml-3.mr-auto {{group.name || "Ungrouped"}}
+            span.ml-3.mr-auto {{group.name || "未分组"}}
             button.btn.btn-outline-info.ml-2((click)='editGroup(group)')
                 i.fa.fa-pencil
             button.btn.btn-outline-danger.ml-1((click)='deleteGroup(group)')
@@ -32,5 +32,8 @@ h3 Quick Commands
                     i.fa.fa-pencil
                 button.btn.btn-outline-danger.ml-1((click)='deleteCommand(cmd)')
                     i.fa.fa-trash-can 
-                    
 
+hr.mt-4.mb-4
+
+// WebDAV同步组件
+app-webdav-sync

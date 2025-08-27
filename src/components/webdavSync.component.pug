@@ -1,0 +1,68 @@
+h3 WebDAV 同步配置
+
+.form-group
+    label WebDAV 服务器 URL
+    input.form-control(
+        type='text',
+        placeholder='https://your-webdav-server.com/path/',
+        [(ngModel)]='webdavConfig.url'
+    )
+
+.form-group
+    label 用户名
+    input.form-control(
+        type='text',
+        placeholder='用户名',
+        [(ngModel)]='webdavConfig.username'
+    )
+
+.form-group
+    label 密码
+    input.form-control(
+        type='password',
+        placeholder='密码',
+        [(ngModel)]='webdavConfig.password'
+    )
+
+.d-flex.mt-3
+    button.btn.btn-outline-secondary.mr-2(
+        (click)='testConnection()',
+        [disabled]='isTesting || isSyncing || !webdavConfig.url'
+    )
+        i.fa.fa-plug.mr-2
+        span {{ isTesting ? '测试中...' : '测试连接' }}
+
+    button.btn.btn-outline-primary.mr-2(
+        (click)='saveConfig()',
+        [disabled]='isSyncing'
+    )
+        i.fa.fa-save.mr-2
+        span 保存配置
+
+    button.btn.btn-outline-info.mr-2(
+        (click)='uploadConfig()',
+        [disabled]='isSyncing || !webdavConfig.url'
+    )
+        i.fa.fa-upload.mr-2
+        span 上传配置到 WebDAV
+
+    button.btn.btn-outline-info(
+        (click)='downloadConfig()',
+        [disabled]='isSyncing || !webdavConfig.url'
+    )
+        i.fa.fa-download.mr-2
+        span 从 WebDAV 下载配置
+
+.mt-3(*ngIf='webdavConfig.lastUploadTime')
+    small.text-muted
+        i.fa.fa-upload.mr-1
+        span 最近上传时间: {{ webdavConfig.lastUploadTime }}
+
+.mt-3(*ngIf='webdavConfig.lastDownloadTime')
+    small.text-muted
+        i.fa.fa-download.mr-1
+        span 最近下载时间: {{ webdavConfig.lastDownloadTime }}
+
+.alert.alert-info.mt-3
+    i.fa.fa-info-circle.mr-2
+    span 配置将以 JSON 格式保存在 WebDAV 服务器上的 tabby-quick-cmds-config.json 文件中。
