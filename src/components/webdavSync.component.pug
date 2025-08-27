@@ -25,6 +25,13 @@ h3 WebDAV 同步配置
     )
 
 .d-flex.mt-3
+    button.btn.btn-outline-secondary.mr-2(
+        (click)='testConnection()',
+        [disabled]='isTesting || isSyncing || !webdavConfig.url'
+    )
+        i.fa.fa-plug.mr-2
+        span {{ isTesting ? '测试中...' : '测试连接' }}
+
     button.btn.btn-outline-primary.mr-2(
         (click)='saveConfig()',
         [disabled]='isSyncing'
@@ -45,6 +52,16 @@ h3 WebDAV 同步配置
     )
         i.fa.fa-download.mr-2
         span 从 WebDAV 下载配置
+
+.mt-3(*ngIf='webdavConfig.lastUploadTime')
+    small.text-muted
+        i.fa.fa-upload.mr-1
+        span 最近上传时间: {{ webdavConfig.lastUploadTime }}
+
+.mt-3(*ngIf='webdavConfig.lastDownloadTime')
+    small.text-muted
+        i.fa.fa-download.mr-1
+        span 最近下载时间: {{ webdavConfig.lastDownloadTime }}
 
 .alert.alert-info.mt-3
     i.fa.fa-info-circle.mr-2

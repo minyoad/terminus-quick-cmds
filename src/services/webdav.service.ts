@@ -1,12 +1,38 @@
 import { Injectable } from '@angular/core'
 import { ConfigService } from 'terminus-core'
-import { QuickCmds } from '../api'
 
 @Injectable()
 export class WebDAVService {
     constructor(
         private config: ConfigService,
     ) { }
+
+    /**
+     * 测试WebDAV连接
+     * @param url WebDAV服务器URL
+     * @param username WebDAV用户名
+     * @param password WebDAV密码
+     * @returns Promise<boolean> 连接是否成功
+     */
+    async testConnection(url: string, username: string, password: string): Promise<boolean> {
+        try {
+            // 创建基本认证头
+            const authHeader = 'Basic ' + btoa(`${username}:${password}`)
+            
+            // 发送OPTIONS请求到WebDAV服务器
+            const response = await fetch(url, {
+                method: 'OPTIONS',
+                headers: {
+                    'Authorization': authHeader
+                }
+            })
+            
+            return response.ok
+        } catch (error) {
+            console.error('测试WebDAV连接失败:', error)
+            return false
+        }
+    }
 
     /**
      * 上传配置到WebDAV服务器
@@ -52,7 +78,7 @@ export class WebDAVService {
      * @param password WebDAV密码
      * @returns Promise<boolean> 下载是否成功
      */
-    async downloadConfig(url: string, username: string, password: string): Promise<boolean> {
+    async downloadConfig(url: string, username: string, password: string): Promise<{success: boolean, cmds?: any[]}> {
         try {
             // 创建基本认证头
             const authHeader = 'Basic ' + btoa(`${username}:${password}`)
@@ -66,7 +92,7 @@ export class WebDAVService {
             })
             
             if (!response.ok) {
-                return false
+                return { success: false }
             }
             
             // 解析JSON响应
@@ -74,15 +100,25 @@ export class WebDAVService {
             
             // 更新本地配置
             if (configData && configData.cmds) {
-                this.config.store.qc.cmds = configData.cmds
-                this.config.save()
-                return true
+                try {
+                    // 不修改配置，只返回命令数据
+                    // 避免任何可能导致应用重启的操作
+                    
+                    // 返回成功状态和命令数据
+                    return { 
+                        success: true,
+                        cmds: configData.cmds 
+                    }
+                } catch (error) {
+                    console.error('保存下载的配置错误:', error)
+                    return { success: false }
+                }
             }
             
-            return false
+            return { success: false }
         } catch (error) {
             console.error('从WebDAV下载配置失败:', error)
-            return false
+            return { success: false }
         }
     }
 }

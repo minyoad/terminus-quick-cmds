@@ -1,38 +1,39 @@
 .modal-body
     .form-group
-        label Name
-        input.form-control(
+        label 名称
+        input.form-control#nameInput(
             type='text', 
-            placeholder="Name",
+            placeholder="请输入名称",
             autofocus,
             [(ngModel)]='command.name', 
+            #nameInput
         )
 
     .form-group
-        label Text
+        label 命令内容
         textarea.form-control(
             rows=6,
             style="white-space: pre-line",
-            placeholder="Text to be sent",
+            placeholder="请输入要发送的文本",
             [(ngModel)]='command.text', 
         )
 
     .form-group
-        label Group
+        label 分组
         input.form-control(
             type='text', 
-            placeholder="Ungrouped",
+            placeholder="未分组",
             [(ngModel)]='command.group', 
         )
 
     .form-line
         .header
-            .title Append '\n'
-            .description Automatically append a '\n' char to the end
+            .title 自动添加换行符
+            .description 自动在末尾添加换行符 '\n'
         toggle(
             [(ngModel)]='command.appendCR',
         )
                     
 .modal-footer
-    button.btn.btn-outline-primary((click)='save()') Save
-    button.btn.btn-outline-danger((click)='cancel()') Cancel
+    button.btn.btn-outline-primary((click)='save()') 保存
+    button.btn.btn-outline-danger((click)='cancel()') 取消

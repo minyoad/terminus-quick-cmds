@@ -16,6 +16,7 @@ import { ButtonProvider } from './buttonProvider'
 import { QuickCmdsConfigProvider } from './config'
 import { QuickCmdsSettingsTabProvider } from './settings'
 import { WebDAVService } from './services/webdav.service'
+import { CommandUpdateService } from './services/command-update.service'
 
 @NgModule({
     imports: [
@@ -29,6 +30,7 @@ import { WebDAVService } from './services/webdav.service'
         { provide: ConfigProvider, useClass: QuickCmdsConfigProvider, multi: true },
         { provide: SettingsTabProvider, useClass: QuickCmdsSettingsTabProvider, multi: true },
         WebDAVService,
+        CommandUpdateService,
     ],
     entryComponents: [
         PromptModalComponent,
