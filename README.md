@@ -19,6 +19,9 @@ The default shortcut for opening the Quick Commands menu is `Alt+Q` for Windows.
 3. 支持延迟命令，使用\sxxx可以延迟xxx毫秒
 
 # Update History
+## v1.1.0.1
+- 修复保存WebDAV配置会丢失的问题
+
 ## v1.1.0.0
 - 修复WebDAV下载配置后页面刷新问题，现在下载配置后不再需要重启应用
 - 修复添加命令后输入框无法获取焦点的问题
