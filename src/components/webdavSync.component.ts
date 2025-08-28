@@ -93,11 +93,28 @@ export class WebDAVSyncComponent {
      * @param saveConfig 是否保存配置（默认为 true）
      */
     private updateConfig(newQc: any, saveConfig: boolean = true): void {
-        // 创建一个新的配置对象
-        const newConfig = { ...this.config.store }
-        
-        // 更新 qc 部分
-        newConfig.qc = newQc
+        // 使用正确的方式更新配置
+        // 不直接设置 config.store.qc，而是更新其内部属性
+        if (this.config.store.qc) {
+            // 更新 webdav 配置
+            if (!this.config.store.qc.webdav) {
+                this.config.store.qc.webdav = {}
+            }
+            
+            // 更新 webdav 属性
+            if (newQc.webdav) {
+                this.config.store.qc.webdav.url = newQc.webdav.url
+                this.config.store.qc.webdav.username = newQc.webdav.username
+                this.config.store.qc.webdav.password = newQc.webdav.password
+                this.config.store.qc.webdav.lastUploadTime = newQc.webdav.lastUploadTime
+                this.config.store.qc.webdav.lastDownloadTime = newQc.webdav.lastDownloadTime
+            }
+            
+            // 如果有 cmds 属性，也更新它
+            if (newQc.cmds) {
+                this.config.store.qc.cmds = newQc.cmds
+            }
+        }
         
         // 使用 ConfigService 的 save 方法保存（如果需要）
         if (saveConfig) {
