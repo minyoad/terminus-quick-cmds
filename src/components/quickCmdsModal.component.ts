@@ -31,6 +31,9 @@ export class QuickCmdsModalComponent {
     private selectedGroupIndex: number = 0
     private selectedCmdIndex: number = -1
 
+    // 新增：记录每条命令的使用次数
+    private usageCount: Record<string, number> = {}
+
     constructor (
         public modalInstance: NgbActiveModal,
         private ngbModal: NgbModal,
@@ -39,12 +42,16 @@ export class QuickCmdsModalComponent {
     ) { }
 
     ngOnInit () {
+        // 从 localStorage 读取历史使用次数
+        try {
+            const raw = localStorage.getItem('qcUsageCount')
+            if (raw) this.usageCount = JSON.parse(raw)
+        } catch {}
+
         this.cmds = this.config.store.qc.cmds
         this.appendCR = true
         this.refresh()
-
         this.updateFlattenedItems()
-        // 初始化时不设置搜索框焦点
     }
 
     quickSend () {
@@ -181,10 +188,13 @@ export class QuickCmdsModalComponent {
     }
 
     send (cmd: QuickCmds, event: MouseEvent) {
+        // 使用次数 +1 并持久化
+        this.usageCount[cmd.text] = (this.usageCount[cmd.text] || 0) + 1
+        localStorage.setItem('qcUsageCount', JSON.stringify(this.usageCount))
+
         if (event.ctrlKey) {
             this._sendAll(cmd)
-        }
-        else {
+        } else {
             this._send(this.app.activeTab, cmd)
         }
         this.close()
@@ -244,7 +254,6 @@ export class QuickCmdsModalComponent {
         this.childGroups = []
         this.flattenedItems = []
 
-        // Filter commands based on search query if quickCmd is present
         let cmds = this.cmds.filter(cmd => {
             if (this.quickCmd) {
                 return (cmd.name + cmd.group + cmd.text).toLowerCase().includes(this.quickCmd.toLowerCase())
@@ -265,14 +274,17 @@ export class QuickCmdsModalComponent {
             group.cmds.push(cmd)
         }
 
-        // After refreshing, re-apply the initial collapse/expand logic
-        // If there's a search query, expand all groups by default
+        // 新增：同组之内按使用次数倒序
+        for (const g of this.childGroups) {
+            g.cmds.sort((a, b) => (this.usageCount[b.text] || 0) - (this.usageCount[a.text] || 0))
+        }
+
+        // 以下原有折叠/展开逻辑不变
         if (this.quickCmd) {
             for (const g of this.childGroups) {
                 this.groupCollapsed[g.name] = false
             }
         } else {
-            // If no search query, collapse all groups and expand the first one by default
             for (const g of this.childGroups) {
                 this.groupCollapsed[g.name] = true
             }
@@ -284,7 +296,7 @@ export class QuickCmdsModalComponent {
         this.selectedGroupIndex = 0
         this.selectedCmdIndex = -1
 
-        if(this.quickCmd &&cmds.length>0){
+        if (this.quickCmd && cmds.length > 0) {
             this.selectedCmdIndex = 0
         }
     }
