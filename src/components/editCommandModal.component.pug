@@ -25,6 +25,28 @@
             option([value]="") Ungrouped
             option(*ngFor="let group of allGroups", [value]="group") {{ group }}
 
+    .form-group
+        label Shortcut
+        .input-group
+            input.form-control(
+                type='text', 
+                placeholder='Click to capture shortcut',
+                [(ngModel)]='command.shortcut', 
+                (click)='startCaptureShortcut($event)',
+                (focus)='startCaptureShortcut($event)',
+                [disabled]='isCapturingShortcut',
+            )
+            .input-group-append
+                button.btn.btn-outline-secondary(
+                    type='button',
+                    (click)='startCaptureShortcut($event)',
+                    [class.btn-outline-primary]='isCapturingShortcut',
+                )
+                    if isCapturingShortcut
+                        | Capturing...
+                    else
+                        | Capture
+
     .form-line
         .header
             .title Append '\n'

@@ -3,6 +3,7 @@ export interface QuickCmds {
     text: string
     appendCR: boolean
     group?: string
+    shortcut?: string
 }
 
 export interface ICmdGroup {
