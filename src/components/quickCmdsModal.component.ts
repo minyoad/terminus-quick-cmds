@@ -1,10 +1,10 @@
 import { Component } from '@angular/core'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
-import { ConfigService, AppService, BaseTabComponent, SplitTabComponent } from 'terminus-core'
+import { ConfigService, AppService, BaseTabComponent, SplitTabComponent } from 'tabby-core'
 import { QuickCmds, ICmdGroup } from '../api'
 import { EditCommandModalComponent } from './editCommandModal.component'
-import { BaseTerminalTabComponent as TerminalTabComponent } from 'terminus-terminal';
+import { BaseTerminalTabComponent } from 'tabby-terminal';
 
 
 interface FlattenedItem {
@@ -88,20 +88,20 @@ export class QuickCmdsModalComponent {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    async _send (tab: BaseTabComponent, quick_cmd: QuickCmds) {    
-        
+    async _send (tab: BaseTabComponent, quick_cmd: QuickCmds) {
+
         if (tab instanceof SplitTabComponent) {
             this._send((tab as SplitTabComponent).getFocusedTab(), quick_cmd)
         }
-        if (tab instanceof TerminalTabComponent) {
-            let currentTab = tab as TerminalTabComponent
+        if (tab instanceof BaseTerminalTabComponent) {
+            let currentTab = tab as BaseTerminalTabComponent<any>
 
             console.log("Current title:", currentTab.title);
 
             let terminator = "\n";
             let lineContinuation = "\\";
             let cmdDelimiter = "&&";
-            
+
             // 根据终端类型设置不同的命令分隔符和续行符
             if (currentTab.title.includes('cmd.exe')) {
                 terminator = "\r\n";
@@ -112,7 +112,7 @@ export class QuickCmdsModalComponent {
                 lineContinuation = "`";
                 cmdDelimiter=";"
             }
-            
+
             let cmd_text=quick_cmd.text
 
             let cmds=cmd_text.split(/(?:\r\n|\r|\n)/)
@@ -144,7 +144,7 @@ export class QuickCmdsModalComponent {
                             return String.fromCharCode(parseInt(pair, 16));
                         });
                 }
-            
+
                 if(!quick_cmd.appendCR){
                     new_cmds.push(cmd);
                     continue;
@@ -152,7 +152,7 @@ export class QuickCmdsModalComponent {
 
                 await currentTab.sendInput(cmd);
                 await this.sleep(50); // 添加小延迟确保命令发送完成
-                await currentTab.sendInput(terminator);                
+                await currentTab.sendInput(terminator);
             }
 
             if (new_cmds.length > 0) {
@@ -382,7 +382,7 @@ export class QuickCmdsModalComponent {
             event.preventDefault()
             const direction = event.key === 'ArrowUp' ? -1 : 1
             const currentIndex = this.getSelectedIndex()
-            
+
             // Function to find the next visible item based on direction
             const findNextVisibleItem = (startIndex: number, direction: number): number => {
                 let index = startIndex + direction;
@@ -437,7 +437,7 @@ export class QuickCmdsModalComponent {
         } else if (event.key === ' ') {
             const searchInput = document.querySelector('.quickCmd') as HTMLElement
             const isSearchFocused = document.activeElement === searchInput
-            
+
             // 如果搜索框没有输入内容，空格键应该用于展开/折叠分组
             if (!this.quickCmd || !isSearchFocused) {
                 event.preventDefault()
@@ -477,7 +477,7 @@ export class QuickCmdsModalComponent {
                 }
             } else {
                 const group = this.childGroups.find(g => g.cmds.includes(item.cmd))
-                if (group && this.childGroups.indexOf(group) === this.selectedGroupIndex && 
+                if (group && this.childGroups.indexOf(group) === this.selectedGroupIndex &&
                     group.cmds.indexOf(item.cmd) === this.selectedCmdIndex) {
                     return i
                 }

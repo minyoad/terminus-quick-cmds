@@ -14,7 +14,7 @@ A plugin that provides quick command functionality for Tabby terminal.
 ## Hotkeys
 
 - Windows: `Alt+Q`
-- macOS: `Alt+Q`
+- macOS: `option(⌥)+Q`
 - Linux: `Alt+Q`
 
 ## Installation

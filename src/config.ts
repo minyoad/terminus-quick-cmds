@@ -1,14 +1,13 @@
-import { ConfigProvider } from 'terminus-core'
+import { ConfigProvider } from 'tabby-core'
 
 export class QuickCmdsConfigProvider extends ConfigProvider {
     defaults = {
         qc: {
             cmds: []
         },
+        reload: true,
         hotkeys: {
-            'qc': [
-                'Alt-Q',
-            ],
+            'qc': ['Alt-Q', '⌥-Q'],
         },
     }
 

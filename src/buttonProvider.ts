@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
-import { HotkeysService, ToolbarButtonProvider, IToolbarButton, ConfigService, AppService, BaseTabComponent, SplitTabComponent } from 'terminus-core'
+import { HotkeysService, ToolbarButtonProvider, IToolbarButton, ConfigService, AppService, BaseTabComponent, SplitTabComponent } from 'tabby-core'
 import { QuickCmdsModalComponent } from './components/quickCmdsModal.component'
-import { BaseTerminalTabComponent as TerminalTabComponent } from 'terminus-terminal';
+import { BaseTerminalTabComponent } from 'tabby-terminal';
 import { QuickCmds } from './api'
+import { altKeyName, metaKeyName, getKeyName, KeyEventData } from "./service"
+// import { altKeyName, metaKeyName, getKeyName, KeyEventData } from "tabby-core"
 
 @Injectable()
 export class ButtonProvider extends ToolbarButtonProvider {
@@ -16,17 +18,17 @@ export class ButtonProvider extends ToolbarButtonProvider {
         private app: AppService,
     ) {
         super()
-        
+
         // Listen for hotkey matches
-        this.hotkeys.matchedHotkey.subscribe(async (hotkey) => {
+        this.hotkeys.hotkey$.subscribe(async (hotkey) => {
             if (hotkey === 'qc') {
                 this.activate()
             } else {
                 // Check if this hotkey matches any command's shortcut
-                this.executeCommandByShortcut(hotkey)
+                this.executeCommandByShortcut(null, hotkey)
             }
         })
-        
+
         // Also listen for document keydown events to capture all shortcuts
         // Use capture phase to ensure we get the event before other handlers
         document.addEventListener('keydown', this.handleDocumentKeyDown.bind(this), true)
@@ -37,69 +39,97 @@ export class ButtonProvider extends ToolbarButtonProvider {
         if (event.repeat) {
             return
         }
-        
+
+        const eventData: KeyEventData = {
+            ctrlKey: event.ctrlKey,
+            metaKey: event.metaKey,
+            altKey: event.altKey,
+            shiftKey: event.shiftKey,
+            code: event.code,
+            key: event.key,
+            eventName: "keydown",
+            time: event.timeStamp,
+            registrationTime: performance.now(),
+        }
+        const keyName = getKeyName(eventData)
         // Skip if the user is typing in an input field
         // const target = event.target as HTMLElement
         // if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
         //     return
         // }
-        
+
         // Build the shortcut string from the event
-        let shortcut = ''
         const modifiers: string[] = []
-        
-        if (event.ctrlKey || event.metaKey) {
+
+        if (eventData.ctrlKey) {
             modifiers.push('Ctrl')
         }
-        if (event.altKey) {
-            modifiers.push('Alt')
+        if (eventData.metaKey) {
+            modifiers.push(metaKeyName)
         }
-        if (event.shiftKey) {
+        if (eventData.altKey) {
+            modifiers.push(altKeyName)
+        }
+        if (eventData.shiftKey) {
             modifiers.push('Shift')
         }
-        
+
         // Sort modifiers to ensure consistent ordering
         modifiers.sort()
-        
+
         // Add modifiers to shortcut string
+        let shortcut = ''
         if (modifiers.length > 0) {
             shortcut = modifiers.join('+') + '+'
         }
-        
-        // Add the main key
-        const mainKey = event.key
-        
+
+        // console.log("222 eventData.ctrlKey", eventData.ctrlKey)
+        // console.log("222 eventData.metaKey", eventData.metaKey)
+        // console.log("222 eventData.shiftKey", eventData.shiftKey)
+        // console.log("222 eventData.altKey", eventData.altKey)
+        // console.log("222 eventData.key", eventData.key)
+        // console.log("222 keyName", keyName)
+        // console.log("222 altKeyName", altKeyName)
         // Only process if we have a valid main key (not just modifiers)
-        if (mainKey && !['Control', 'Alt', 'Shift', 'Meta'].includes(mainKey)) {
-            let processedKey = mainKey
-            
-            // Handle special cases for keys that need consistent naming
-            if (mainKey.length === 1) {
-                // For single character keys, use uppercase
-                processedKey = mainKey.toUpperCase()
-            } else {
-                // For special keys (like ArrowUp), use camelCase with first letter uppercase
-                processedKey = mainKey.charAt(0).toUpperCase() + mainKey.slice(1)
-            }
-            
-            shortcut += processedKey
-            
+        if (!['Control', altKeyName, 'Shift', metaKeyName].includes(keyName)) {
+            shortcut += keyName
             // Check if this shortcut matches any command
-            this.executeCommandByShortcut(shortcut)
+            this.executeCommandByShortcut(event, shortcut)
         }
     }
 
-    async executeCommandByShortcut(hotkey: string) {
+    async executeCommandByShortcut(event, hotkey: string) {
+        if (this.config.store.reload) {
+            // console.log("111 reload hotkeys")
+            let hotkeyNamePrefix = "Quick Cmd: "
+            // Cleanup Quick Cmd hotkeys
+            for (const key of Object.keys(this.config.store.hotkeys)) {
+                if (key.startsWith(hotkeyNamePrefix)) {
+                    delete this.config.store.hotkeys[key]
+                }
+            }
+            // Add new Quick Cmd hotkeys
+            for (let cmd of this.config.store.qc.cmds) {
+                this.config.store.hotkeys[hotkeyNamePrefix + cmd.name] = [cmd.shortcut.replace(/\+/g, '-')]
+            }
+            this.config.store.reload = false
+        }
+
         const commands = this.config.store.qc.cmds
+        // console.log("111 quick commands: ", commands)
+        // console.log("111 input hotkeys: ", hotkey)
         const matchedCommand = commands.find(cmd => cmd.shortcut === hotkey)
-        
+
         if (matchedCommand) {
             // Use count +1 and persist
             this.usageCount[matchedCommand.text] = (this.usageCount[matchedCommand.text] || 0) + 1
             localStorage.setItem('qcUsageCount', JSON.stringify(this.usageCount))
-            
+
             // Execute the command
             await this._send(this.app.activeTab, matchedCommand)
+            // console.log("event:", event)
+            event.preventDefault()
+            event.stopPropagation()
         }
     }
 
@@ -108,13 +138,13 @@ export class ButtonProvider extends ToolbarButtonProvider {
             this._send((tab as SplitTabComponent).getFocusedTab(), quick_cmd)
             return
         }
-        if (tab instanceof TerminalTabComponent) {
-            let currentTab = tab as TerminalTabComponent
+        if (tab instanceof BaseTerminalTabComponent) {
+            let currentTab = tab as BaseTerminalTabComponent<any>
 
             let terminator = "\n"
             let lineContinuation = "\\"
             let cmdDelimiter = "&&"
-            
+
             // Set different command delimiters and line continuations based on terminal type
             if (currentTab.title.includes('cmd.exe')) {
                 terminator = "\r\n"
@@ -125,7 +155,7 @@ export class ButtonProvider extends ToolbarButtonProvider {
                 lineContinuation = "`"
                 cmdDelimiter=";"
             }
-            
+
             let cmd_text=quick_cmd.text
             let cmds=cmd_text.split(/(?:\r\n|\r|\n)/)
             let new_cmds=[]
@@ -151,7 +181,7 @@ export class ButtonProvider extends ToolbarButtonProvider {
                             return String.fromCharCode(parseInt(pair, 16))
                         })
                 }
-            
+
                 if(!quick_cmd.appendCR){
                     new_cmds.push(cmd)
                     continue

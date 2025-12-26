@@ -14,7 +14,7 @@
 ## 快捷键
 
 - Windows: `Alt+Q`
-- macOS: `Alt+Q`
+- macOS: `option(⌥)+Q`
 - Linux: `Alt+Q`
 
 ## 安装说明

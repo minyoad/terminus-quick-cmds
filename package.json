@@ -43,9 +43,9 @@
     "@angular/core": "^4.1.3",
     "@angular/forms": "^4.1.3",
     "@ng-bootstrap/ng-bootstrap": "^1.0.0-alpha.29",
-    "terminus-core": "*",
-    "terminus-settings": "*",
-    "terminus-terminal": "*"
+    "tabby-core": "*",
+    "tabby-settings": "*",
+    "tabby-terminal": "*"
   },
   "dependencies": {
     "@angular/common": "^13.3.2",
@@ -53,9 +53,9 @@
     "@angular/forms": "^13.3.2",
     "@ng-bootstrap/ng-bootstrap": "^12.0.2",
     "rxjs": "^7.5.5",
-    "terminus-core": "^1.0.140",
-    "terminus-settings": "^1.0.140",
-    "terminus-terminal": "^1.0.140",
+    "tabby-core": "^1.0.197-nightly.1",
+    "tabby-settings": "^1.0.197-nightly.1",
+    "tabby-terminal": "^1.0.197-nightly.1",
     "ts-loader": "^9.2.8"
   },
   "repository": {

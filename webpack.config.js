@@ -34,5 +34,6 @@ module.exports = {
     /^@angular/,
     /^@ng-bootstrap/,
     /^terminus-/,
+    /^tabby-/,
   ]
 }

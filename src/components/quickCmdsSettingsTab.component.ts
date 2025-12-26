@@ -1,6 +1,6 @@
 import { Component } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
-import { ConfigService } from 'terminus-core'
+import { ConfigService } from 'tabby-core'
 import { QuickCmds, ICmdGroup } from '../api'
 import { EditCommandModalComponent } from './editCommandModal.component'
 import { PromptModalComponent } from './promptModal.component'
@@ -34,6 +34,16 @@ export class QuickCmdsSettingsTabComponent {
         modal.componentInstance.allGroups = Array.from(new Set(this.commands.map(x => x.group || ''))).filter(x => x)
 
         modal.result.then(result => {
+            /*
+            // 从UI新建 QuickCmds: name, shortcut, text, group
+            export interface QuickCmds {
+                name: string
+                text: string
+                appendCR: boolean
+                group?: string
+                shortcut?: string
+            }
+            */
             this.commands.push(result)
             this.config.store.qc.cmds = this.commands
             this.config.save()
@@ -51,6 +61,16 @@ export class QuickCmdsSettingsTabComponent {
             if (result.group === 'Ungrouped') {
                 result.group = null
             }
+            /*
+            // 从UI修改 QuickCmds: name, shortcut, text, group
+            export interface QuickCmds {
+                name: string
+                text: string
+                appendCR: boolean
+                group?: string
+                shortcut?: string
+            }
+            */
             Object.assign(command, result)
             this.config.save()
             this.refresh()
@@ -116,6 +136,7 @@ export class QuickCmdsSettingsTabComponent {
             }
             group.cmds.push(cmd)
         }
+        this.config.store.reload = true
     }
-   
+
 }

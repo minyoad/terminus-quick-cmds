@@ -1271,11 +1271,6 @@ has@^1.0.1, has@^1.0.3:
   dependencies:
     function-bind "^1.1.1"
 
-hterm-umdjs@1.4.1:
-  version "1.4.1"
-  resolved "https://registry.npmmirror.com/hterm-umdjs/-/hterm-umdjs-1.4.1.tgz#0cd5352eaf927c70b83c36146cf2c2a281dba957"
-  integrity sha512-r5JOmdDK1bZCmp3cKcuGRLVeum33H+pzD119ZxmQou+QUVe6SAVSz03HvKWVhM2Ao1Biv+fkhFDmnsaRPq0tFg==
-
 http-cache-semantics@^4.0.0:
   version "4.1.0"
   resolved "https://registry.npmmirror.com/http-cache-semantics/-/http-cache-semantics-4.1.0.tgz#49e91c5cbf36c9b94bcfcd71c23d5249ec74e390"
@@ -1788,22 +1783,10 @@ node-addon-api@^7.0.0:
   resolved "https://registry.npmmirror.com/node-addon-api/-/node-addon-api-7.1.1.tgz#1aba6693b0f255258a049d621329329322aad558"
   integrity sha512-5m3bsyrjFWE1xf7nz7YXdN4udnVtXK6/Yfgn5qnahL6bCkf2yKt4k3nuTKAtT4r3IG8JNR2ncsIMdZuAzJjHQQ==
 
-node-bin-setup@^1.0.0:
-  version "1.1.0"
-  resolved "https://registry.npmmirror.com/node-bin-setup/-/node-bin-setup-1.1.0.tgz#9df94c41335a8f41958a639b2736f860582a209c"
-  integrity sha512-pTeU6NgUrexiLNtd+AKwvg6cngHMvj5FZ5e2bbv2ogBSIc9yhkXSSaTScfSRZnwHIh5YFmYSYlemLWkiKD7rog==
-
 node-releases@^2.0.2:
   version "2.0.3"
   resolved "https://registry.npmmirror.com/node-releases/-/node-releases-2.0.3.tgz#225ee7488e4a5e636da8da52854844f9d716ca96"
   integrity sha512-maHFz6OLqYxz+VQyCAtA3PTX4UP/53pa05fyDNc9CwjvJ0yEh6+xBwKsgCxMNhS8taUKBFYxfuiaD9U/55iFaw==
-
-node@14.15.0:
-  version "14.15.0"
-  resolved "https://registry.npmmirror.com/node/-/node-14.15.0.tgz#40b8395d5247a077769ab3e69268fba690406253"
-  integrity sha512-FrsP5wcA72CXNgQUk7zIdZm4vciBa/ahzaGC5iv3T0coNvz7hGsiI4pMdqqr0OXlVqyvSxDHzUUrhxlY3Hb2Kg==
-  dependencies:
-    node-bin-setup "^1.0.0"
 
 normalize-url@^4.1.0:
   version "4.5.1"
@@ -1880,14 +1863,6 @@ onetime@^5.1.2:
   integrity sha512-kbpaSSGJTWdAY5KPVeMOKXSrPtr8C8C7wodJbcsd51jRnmD+GZu8Y0VoU6Dm5Z4vWr0Ig/1NKuWRKf7j5aaYSg==
   dependencies:
     mimic-fn "^2.1.0"
-
-opentype.js@^1.3.3:
-  version "1.3.4"
-  resolved "https://registry.npmmirror.com/opentype.js/-/opentype.js-1.3.4.tgz#1c0e72e46288473cc4a4c6a2dc60fd7fe6020d77"
-  integrity sha512-d2JE9RP/6uagpQAVtJoF0pJJA/fgai89Cc50Yp0EJHk+eLp6QQ7gBoblsnubRULNY132I0J1QKMJ+JTbMqz4sw==
-  dependencies:
-    string.prototype.codepointat "^0.2.1"
-    tiny-inflate "^1.0.3"
 
 p-cancelable@^1.0.0:
   version "1.1.0"
@@ -2515,11 +2490,6 @@ static-extend@^0.1.1:
     define-property "^0.2.5"
     object-copy "^0.1.0"
 
-string.prototype.codepointat@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.npmmirror.com/string.prototype.codepointat/-/string.prototype.codepointat-0.2.1.tgz#004ad44c8afc727527b108cd462b4d971cd469bc"
-  integrity sha512-2cBVCj6I4IOvEnjgO/hWqXjqBGsY+zwPmHl12Srk9IXSZ56Jwwmy+66XO5Iut/oQVR7t5ihYdLB0GMa4alEUcg==
-
 string_decoder@~1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/string_decoder/-/string_decoder-1.0.3.tgz#0fc67d7c141825de94282dd536bec6b9bce860ab"
@@ -2573,6 +2543,21 @@ svg-inline-loader@^0.8.2:
     object-assign "^4.0.1"
     simple-html-tokenizer "^0.1.1"
 
+tabby-core@^1.0.197-nightly.1:
+  version "1.0.197-nightly.1"
+  resolved "https://registry.yarnpkg.com/tabby-core/-/tabby-core-1.0.197-nightly.1.tgz#80122325dd174792be732e86547a68d472d1f0bb"
+  integrity sha512-GS4Q3orewMdZk4HAJp1vVg/Pv+FcN7E3o6TJHaUtPHRTWSeNM4MOoHY2HJINgcjaFuInthe4+8dK1W2aIECy2Q==
+
+tabby-settings@^1.0.197-nightly.1:
+  version "1.0.197-nightly.1"
+  resolved "https://registry.yarnpkg.com/tabby-settings/-/tabby-settings-1.0.197-nightly.1.tgz#0199456d6727475f480f5cc527dcca4eeadcd72b"
+  integrity sha512-+EIzyiGPU8hFLUh2YksWXZfGbtKLGAo0lWPdl3fW62/K0U1lllAY2oCjschpOpNW1P6UDpjZEtFiQDfK1EwkJw==
+
+tabby-terminal@^1.0.197-nightly.1:
+  version "1.0.197-nightly.1"
+  resolved "https://registry.yarnpkg.com/tabby-terminal/-/tabby-terminal-1.0.197-nightly.1.tgz#fde59e64046718fb5a8e4699a996eb33e461880c"
+  integrity sha512-eCzT7pL50PEtniUXlFnBBWMIfPmqX8eZ9EZoAbUIpfxv0/WJBDLsQnn6NiJaFBgwMdCF4hQ54TYdnvroJUScpg==
+
 tapable@^1.0.0:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/tapable/-/tapable-1.1.3.tgz#a1fccc06b58db61fd7a45da2da44f5f3a3e67ba2"
@@ -2582,24 +2567,6 @@ tapable@^2.1.1, tapable@^2.2.0:
   version "2.2.1"
   resolved "https://registry.npmmirror.com/tapable/-/tapable-2.2.1.tgz#1967a73ef4060a82f12ab96af86d52fdb76eeca0"
   integrity sha512-GNzQvQTOIP6RyTfE2Qxb8ZVlNmw0n88vp1szwWRimP02mnTsx3Wtn5qRdqY9w2XduFNUgvOwhNnQsjwCp+kqaQ==
-
-terminus-core@^1.0.140:
-  version "1.0.140"
-  resolved "https://registry.npmmirror.com/terminus-core/-/terminus-core-1.0.140.tgz#4f1c8f5cdbf6c47bd659407d5f69ae783139d6dd"
-  integrity sha512-Q5A2G8B+Bro2V8b6dL7rfvlpB6F4kLzVlIDxHF5k/7LZzz7PvmKGCJeFO1DbukD5Nh9ORdNaTFUcuAispYOr1Q==
-
-terminus-settings@^1.0.140:
-  version "1.0.140"
-  resolved "https://registry.npmmirror.com/terminus-settings/-/terminus-settings-1.0.140.tgz#ef44e1abce9d8de86b14f9e460b47300e97924cb"
-  integrity sha512-+rxoZ9ecaksrVn+4OAGDEJZv7kttRHsPwbsxp+yRodeNs0AFiN6eNyf6M8zikbE8ppPCkNNMTLW6oXvF5dywHQ==
-
-terminus-terminal@^1.0.140:
-  version "1.0.140"
-  resolved "https://registry.npmmirror.com/terminus-terminal/-/terminus-terminal-1.0.140.tgz#eb19fae27357760a6aa5ded5c5e4edbb6deb726d"
-  integrity sha512-fk5Ee/+AFOWwlezHjls53bneKEhWKi/ceLxC1U72piZoeoql2d4eO/+t1Kl+3XB70PCiIMb4aKZGn5y+p107aw==
-  dependencies:
-    hterm-umdjs "1.4.1"
-    opentype.js "^1.3.3"
 
 terser-webpack-plugin@^5.1.3:
   version "5.3.1"
@@ -2621,11 +2588,6 @@ terser@^5.7.2:
     commander "^2.20.0"
     source-map "~0.7.2"
     source-map-support "~0.5.20"
-
-tiny-inflate@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.npmmirror.com/tiny-inflate/-/tiny-inflate-1.0.3.tgz#122715494913a1805166aaf7c93467933eea26c4"
-  integrity sha512-pkY1fj1cKHb2seWDy0B16HeWyczlJA9/WW3u3c4z/NiWDsO3DOU5D7nhTLE9CF0yXv/QZFY7sEJmj24dK+Rrqw==
 
 to-fast-properties@^2.0.0:
   version "2.0.0"
