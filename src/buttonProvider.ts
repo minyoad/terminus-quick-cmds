@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core'
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { HotkeysService, ToolbarButtonProvider, IToolbarButton, ConfigService, AppService, BaseTabComponent, SplitTabComponent } from 'tabby-core'
 import { BaseTerminalTabComponent } from 'tabby-terminal';
 import { QuickCmds } from './api'
@@ -8,7 +7,6 @@ import { QuickCmds } from './api'
 export class ButtonProvider extends ToolbarButtonProvider {
 
     constructor (
-        private ngbModal: NgbModal,
         private hotkeys: HotkeysService,
         private config: ConfigService,
         private app: AppService,
