@@ -4,7 +4,8 @@ import { BaseTerminalTabComponent } from 'tabby-terminal';
 import { QuickCmds } from './api'
 
 @Injectable()
-export class ButtonProvider extends ToolbarButtonProvider {
+export class QuickCmdButtonProvider extends ToolbarButtonProvider {
+    PLUGIN_NAME = "Quick Cmd"
 
     constructor (
         private hotkeys: HotkeysService,
@@ -23,10 +24,6 @@ export class ButtonProvider extends ToolbarButtonProvider {
     }
 
     async executeCommandByShortcut(hotkey_id: string) {
-        if (this.config.store.reload) {
-            this.reload_hotkey()
-        }
-
         const commands = this.config.store.qc.cmds
         const matchedCommand = commands.find(cmd => cmd.id === hotkey_id)
         // console.log("[quick-cmd] hotkey_id:", hotkey_id)
@@ -57,22 +54,21 @@ export class ButtonProvider extends ToolbarButtonProvider {
     }
 
     reload_hotkey () {
-        console.log("111 reload hotkeys")
-        let hotkeyNamePrefix = "Quick Cmd: "
+        console.log("[Quick Cmd] reload hotkeys")
+
         // Cleanup Quick Cmd hotkeys
         for (const key of Object.keys(this.config.store.hotkeys)) {
-            if (key.startsWith(hotkeyNamePrefix)) {
+            if (key.startsWith(this.PLUGIN_NAME)) {
                 delete this.config.store.hotkeys[key]
             }
         }
         // Add new Quick Cmd hotkeys
         let hotkey_id: string
         for (let cmd of this.config.store.qc.cmds) {
-            hotkey_id = hotkeyNamePrefix + cmd.name
+            hotkey_id = this.PLUGIN_NAME + ":" + cmd.name
             this.config.store.hotkeys[hotkey_id] = [cmd.shortcut.replace(/\+/g, '-')]
             cmd.id = hotkey_id
         }
-        this.config.store.reload = false
     }
 
     provide (): IToolbarButton[] {

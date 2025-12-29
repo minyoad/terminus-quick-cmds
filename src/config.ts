@@ -6,7 +6,6 @@ export class QuickCmdsConfigProvider extends ConfigProvider {
         qc: {
             cmds: [] as QuickCmds[],
         },
-        reload: true,
         hotkeys: {},
     }
 

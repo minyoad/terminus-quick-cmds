@@ -1,9 +1,10 @@
-import { Component } from '@angular/core'
+import { Component, Inject } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
-import { ConfigService } from 'tabby-core'
+import { ConfigService, ToolbarButtonProvider } from 'tabby-core'
 import { QuickCmds, ICmdGroup } from '../api'
 import { EditCommandModalComponent } from './editCommandModal.component'
 import { PromptModalComponent } from './promptModal.component'
+import { QuickCmdButtonProvider } from "../button";
 
 @Component({
     template: require('./quickCmdsSettingsTab.component.pug'),
@@ -17,9 +18,15 @@ export class QuickCmdsSettingsTabComponent {
     constructor (
         public config: ConfigService,
         private ngbModal: NgbModal,
+        @Inject(ToolbarButtonProvider)
+        private buttonProviders: ToolbarButtonProvider[],
     ) {
         this.commands = this.config.store.qc.cmds
         this.refresh()
+    }
+
+    private get_button (): QuickCmdButtonProvider | undefined {
+      return this.buttonProviders.find(p => p instanceof QuickCmdButtonProvider) as QuickCmdButtonProvider
     }
 
     createCommand () {
@@ -137,7 +144,7 @@ export class QuickCmdsSettingsTabComponent {
             }
             group.cmds.push(cmd)
         }
-        this.config.store.reload = true
+        this.get_button()?.reload_hotkey()
     }
 
 }

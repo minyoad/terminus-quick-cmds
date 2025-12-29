@@ -10,7 +10,7 @@ import { EditCommandModalComponent } from './components/editCommandModal.compone
 import { QuickCmdsSettingsTabComponent } from './components/quickCmdsSettingsTab.component'
 import { PromptModalComponent } from './components/promptModal.component'
 
-import { ButtonProvider } from './buttonProvider'
+import { QuickCmdButtonProvider } from './button'
 import { QuickCmdsConfigProvider } from './config'
 import { QuickCmdsSettingsTabProvider } from './settings'
 
@@ -22,7 +22,7 @@ import { QuickCmdsSettingsTabProvider } from './settings'
         TabbyCoreModule,
     ],
     providers: [
-        { provide: ToolbarButtonProvider, useClass: ButtonProvider, multi: true },
+        { provide: ToolbarButtonProvider, useClass: QuickCmdButtonProvider, multi: true },
         { provide: ConfigProvider, useClass: QuickCmdsConfigProvider, multi: true },
         { provide: SettingsTabProvider, useClass: QuickCmdsSettingsTabProvider, multi: true },
     ],
