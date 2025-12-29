@@ -27,7 +27,7 @@ export class QuickCmdsSettingsTabComponent {
             id: '',
             name: '',
             text: '',
-            appendCR: true,
+            appendCR: false,
         }
 
         let modal = this.ngbModal.open(EditCommandModalComponent)

@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { HotkeysService, ToolbarButtonProvider, IToolbarButton, ConfigService, AppService, BaseTabComponent, SplitTabComponent } from 'tabby-core'
-import { QuickCmdsModalComponent } from './components/quickCmdsModal.component'
 import { BaseTerminalTabComponent } from 'tabby-terminal';
 import { QuickCmds } from './api'
 
@@ -78,19 +77,12 @@ export class ButtonProvider extends ToolbarButtonProvider {
         this.config.store.reload = false
     }
 
-    activate () {
-        this.ngbModal.open(QuickCmdsModalComponent)
-    }
-
     provide (): IToolbarButton[] {
         return [{
             icon: require('./icons/keyboard.svg'),
             weight: 5,
             title: 'Quick commands',
             touchBarNSImage: 'NSTouchBarComposeTemplate',
-            click: async () => {
-                this.activate()
-            }
         }]
     }
 }

@@ -1,10 +1,9 @@
 import { Component } from '@angular/core'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
-import { ConfigService, AppService, BaseTabComponent, SplitTabComponent } from 'tabby-core'
+import { ConfigService, AppService } from 'tabby-core'
 import { QuickCmds, ICmdGroup } from '../api'
 import { EditCommandModalComponent } from './editCommandModal.component'
-import { BaseTerminalTabComponent } from 'tabby-terminal';
 
 
 interface FlattenedItem {
@@ -41,154 +40,18 @@ export class QuickCmdsModalComponent {
     ngOnInit () {
         // 从 localStorage 读取历史使用次数
         this.cmds = this.config.store.qc.cmds
-        this.appendCR = true
+        this.appendCR = false
         this.refresh()
         this.updateFlattenedItems()
-    }
-
-    quickSend () {
-        const selectedItem = this.getSelectedItem();
-        if (selectedItem && selectedItem.type === 'cmd') {
-            this.send(selectedItem.cmd, new MouseEvent('click'));
-        } else {
-            let command: QuickCmds = {
-                id: '',
-                name: '',
-                text: this.quickCmd,
-                appendCR: true,
-            }
-            this._send(this.app.activeTab, command)
-        }
-        this.close()
-    }
-
-    quickSendAll() {
-        const selectedItem = this.getSelectedItem();
-        if (selectedItem && selectedItem.type === 'cmd') {
-            this.send(selectedItem.cmd, new MouseEvent('click', { ctrlKey: true }));
-        } else {
-            let command: QuickCmds = {
-                id: '',
-                name: '',
-                text: this.quickCmd,
-                appendCR: true,
-            }
-            this._sendAll(command)
-        }
-        this.close()
     }
 
     sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    async _send (tab: BaseTabComponent, quick_cmd: QuickCmds) {
-
-        if (tab instanceof SplitTabComponent) {
-            this._send((tab as SplitTabComponent).getFocusedTab(), quick_cmd)
-        }
-        if (tab instanceof BaseTerminalTabComponent) {
-            let currentTab = tab as BaseTerminalTabComponent<any>
-
-            console.log("Current title:", currentTab.title);
-
-            let terminator = "\n";
-            let lineContinuation = "\\";
-            let cmdDelimiter = "&&";
-
-            // 根据终端类型设置不同的命令分隔符和续行符
-            if (currentTab.title.includes('cmd.exe')) {
-                terminator = "\r\n";
-                lineContinuation = "^";
-                cmdDelimiter="&"
-            } else if (currentTab.title.includes('powershell')) {
-                terminator = "\r\n";
-                lineContinuation = "`";
-                cmdDelimiter=";"
-            }
-
-            let cmd_text=quick_cmd.text
-
-            let cmds=cmd_text.split(/(?:\r\n|\r|\n)/)
-
-            let new_cmds=[];
-
-            for(let cmd of cmds) {
-                console.log("Sending " + cmd);
-
-                if(cmd===''){
-                    continue;
-                }
-
-                if(cmd.startsWith('\\s')){
-                    // 处理以 \s 开头的命令
-                    console.log('Processing sleep command');
-                    if(!quick_cmd.appendCR){
-                        continue;
-                    }
-                    cmd=cmd.replace('\\s','');
-                    let sleepTime=parseInt(cmd);
-                    await this.sleep(sleepTime);
-                    console.log('sleep time: ' + sleepTime);
-                    continue;
-                }
-
-                if(cmd.startsWith('\\x')){
-                    cmd = cmd.replace(/\\x([0-9a-f]{2})/ig, function(_, pair) {
-                            return String.fromCharCode(parseInt(pair, 16));
-                        });
-                }
-
-                if(!quick_cmd.appendCR){
-                    new_cmds.push(cmd);
-                    continue;
-                }
-
-                await currentTab.sendInput(cmd);
-                await this.sleep(50); // 添加小延迟确保命令发送完成
-                await currentTab.sendInput(terminator);
-            }
-
-            if (new_cmds.length > 0) {
-                let new_cmd_text;
-                if (currentTab.title.includes('powershell')) {
-                    // PowerShell特殊处理：使用分号连接命令，最后一个命令后不加续行符
-                    new_cmd_text = new_cmds.join(" ; ");
-                } else {
-                    new_cmd_text = new_cmds.join(" "+cmdDelimiter + lineContinuation + terminator);
-                }
-                console.log("New command text:", new_cmd_text);
-                await currentTab.sendInput(new_cmd_text);
-                // await currentTab.sendInput(terminator);
-            }
-        }
-    }
-
-    _sendAll (cmd: QuickCmds) {
-        for (let tab of this.app.tabs) {
-            if (tab instanceof SplitTabComponent) {
-                for (let subtab of (tab as SplitTabComponent).getAllTabs()) {
-                    this._send(subtab, cmd)
-                }
-            } else {
-                this._send(tab, cmd)
-            }
-        }
-    }
-
     close () {
         this.modalInstance.close()
         this.app.activeTab.emitFocused()
-    }
-
-    send (cmd: QuickCmds, event: MouseEvent) {
-
-        if (event.ctrlKey) {
-            this._sendAll(cmd)
-        } else {
-            this._send(this.app.activeTab, cmd)
-        }
-        this.close()
     }
 
     edit (command?: QuickCmds) {
@@ -216,29 +79,16 @@ export class QuickCmdsModalComponent {
         }, () => null)
     }
 
-    clickGroup (group: ICmdGroup, event: MouseEvent) {
-        if (event.shiftKey) {
-            if (event.ctrlKey) {
-                for (let cmd of group.cmds) {
-                    this._sendAll(cmd)
-                }
-            }
-            else {
-                for (let cmd of group.cmds) {
-                    this._send(this.app.activeTab, cmd)
-                }
-            }
+    clickGroup (group: ICmdGroup) {
+        console.log("11111")
+        // Toggle the collapse state of the clicked group
+        this.groupCollapsed[group.name] = !this.groupCollapsed[group.name]
+        this.updateFlattenedItems()
+        // If the group is now collapsed, deselect any command within it
+        if (this.groupCollapsed[group.name] && this.selectedGroupIndex === this.childGroups.indexOf(group)) {
+            this.selectedCmdIndex = -1
         }
-        else {
-            // Toggle the collapse state of the clicked group
-            this.groupCollapsed[group.name] = !this.groupCollapsed[group.name]
-            this.updateFlattenedItems()
-            // If the group is now collapsed, deselect any command within it
-            if (this.groupCollapsed[group.name] && this.selectedGroupIndex === this.childGroups.indexOf(group)) {
-                this.selectedCmdIndex = -1
-            }
-            this.selectedGroupIndex = this.childGroups.indexOf(group)
-        }
+        this.selectedGroupIndex = this.childGroups.indexOf(group)
     }
 
     refresh () {
@@ -444,12 +294,6 @@ export class QuickCmdsModalComponent {
                     this.groupCollapsed[selectedItem.group.name] = false;
                 }
                 this.updateFlattenedItems();
-            }
-        } else if (event.key === 'Enter') {
-            event.preventDefault()
-            const selectedItem = this.getSelectedItem()
-            if (selectedItem && selectedItem.type === 'cmd') {
-                this.send(selectedItem.cmd, new MouseEvent('click'))
             }
         }
     }

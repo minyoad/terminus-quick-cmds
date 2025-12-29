@@ -14,8 +14,8 @@
 // 删除重复的 noUnusedParameters 配置项
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "noUnusedParameters": true,
-    "noUnusedLocals": true,
+    "noUnusedParameters": false,
+    "noUnusedLocals": false,
     "declaration": true,
     "declarationDir": "dist",
     "lib": [
