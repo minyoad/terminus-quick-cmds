@@ -2,4 +2,4 @@ yarn
 
 yarn run build
 
-ln -s ~/github/tabby_project/terminus-quick-cmds/dist '~/Library/Application Support/tabby/plugins/node_modules/tabby-quick-cmds/dist
+ln -s ~/github/tabby_project/terminus-quick-cmds/dist ~/Library/Application\ Support/tabby/plugins/node_modules/tabby-quick-cmds/dist

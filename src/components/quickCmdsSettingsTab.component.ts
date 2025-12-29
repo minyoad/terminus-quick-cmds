@@ -24,6 +24,7 @@ export class QuickCmdsSettingsTabComponent {
 
     createCommand () {
         let command: QuickCmds = {
+            id: '',
             name: '',
             text: '',
             appendCR: true,

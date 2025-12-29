@@ -1,4 +1,5 @@
 export interface QuickCmds {
+    id: string
     name: string
     text: string
     appendCR: boolean

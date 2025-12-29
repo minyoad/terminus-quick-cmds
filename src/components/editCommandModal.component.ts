@@ -1,7 +1,7 @@
 import { Component, HostListener } from '@angular/core'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { QuickCmds } from '../api'
-import { getKeyName } from "../service"
+import { getKeyName } from "../hotkeys.util"
 import { altKeyName, metaKeyName, KeyEventData } from "tabby-core"
 
 @Component({

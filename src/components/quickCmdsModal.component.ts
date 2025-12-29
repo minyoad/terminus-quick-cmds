@@ -31,9 +31,6 @@ export class QuickCmdsModalComponent {
     private selectedGroupIndex: number = 0
     private selectedCmdIndex: number = -1
 
-    // 新增：记录每条命令的使用次数
-    private usageCount: Record<string, number> = {}
-
     constructor (
         public modalInstance: NgbActiveModal,
         private ngbModal: NgbModal,
@@ -43,11 +40,6 @@ export class QuickCmdsModalComponent {
 
     ngOnInit () {
         // 从 localStorage 读取历史使用次数
-        try {
-            const raw = localStorage.getItem('qcUsageCount')
-            if (raw) this.usageCount = JSON.parse(raw)
-        } catch {}
-
         this.cmds = this.config.store.qc.cmds
         this.appendCR = true
         this.refresh()
@@ -60,6 +52,7 @@ export class QuickCmdsModalComponent {
             this.send(selectedItem.cmd, new MouseEvent('click'));
         } else {
             let command: QuickCmds = {
+                id: '',
                 name: '',
                 text: this.quickCmd,
                 appendCR: true,
@@ -75,6 +68,7 @@ export class QuickCmdsModalComponent {
             this.send(selectedItem.cmd, new MouseEvent('click', { ctrlKey: true }));
         } else {
             let command: QuickCmds = {
+                id: '',
                 name: '',
                 text: this.quickCmd,
                 appendCR: true,
@@ -188,9 +182,6 @@ export class QuickCmdsModalComponent {
     }
 
     send (cmd: QuickCmds, event: MouseEvent) {
-        // 使用次数 +1 并持久化
-        this.usageCount[cmd.text] = (this.usageCount[cmd.text] || 0) + 1
-        localStorage.setItem('qcUsageCount', JSON.stringify(this.usageCount))
 
         if (event.ctrlKey) {
             this._sendAll(cmd)
@@ -272,11 +263,6 @@ export class QuickCmdsModalComponent {
                 this.childGroups.push(group)
             }
             group.cmds.push(cmd)
-        }
-
-        // 新增：同组之内按使用次数倒序
-        for (const g of this.childGroups) {
-            g.cmds.sort((a, b) => (this.usageCount[b.text] || 0) - (this.usageCount[a.text] || 0))
         }
 
         // 以下原有折叠/展开逻辑不变

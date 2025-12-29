@@ -1,14 +1,13 @@
 import { ConfigProvider } from 'tabby-core'
+import {QuickCmds} from "./api";
 
 export class QuickCmdsConfigProvider extends ConfigProvider {
     defaults = {
         qc: {
-            cmds: []
+            cmds: [] as QuickCmds[],
         },
         reload: true,
-        hotkeys: {
-            'qc': ['Alt-Q', '⌥-Q'],
-        },
+        hotkeys: {},
     }
 
     platformDefaults = { }
